@@ -2,6 +2,7 @@ export function getElements() {
   return {
     glyphCanvas: document.querySelector("#glyphCanvas"),
     effectCanvas: document.querySelector("#effectCanvas"),
+    judgeOverlayCanvas: document.querySelector("#judgeOverlayCanvas"),
     canvasShell: document.querySelector(".canvas-shell"),
     canvasHint: document.querySelector("#canvasHint"),
     undoButton: document.querySelector("#undoButton"),
@@ -10,6 +11,10 @@ export function getElements() {
     diagnosticsToggle: document.querySelector("#diagnosticsToggle"),
     dictionaryRootPanel: document.querySelector("#dictionaryRootPanel"),
     diagnosticRootPanel: document.querySelector("#diagnosticRootPanel"),
+    judgeRootPanel: document.querySelector("#judgeRootPanel"),
+    judgeRootPanelMount: document.querySelector("#judgeRootPanelMount"),
+    settingsRootPanel: document.querySelector("#settingsRootPanel"),
+    settingsRootPanelMount: document.querySelector("#settingsRootPanelMount"),
     panelTabButtons: [...document.querySelectorAll(".panel-tab-button")],
     statusValue: document.querySelector("#statusValue"),
     elementValue: document.querySelector("#elementValue"),

@@ -84,6 +84,7 @@
             </p>
             <canvas id="glyphCanvas" width="1200" height="800"></canvas>
             <canvas id="effectCanvas" width="1200" height="800"></canvas>
+            <canvas id="judgeOverlayCanvas" width="1200" height="800" aria-hidden="true"></canvas>
           </div>
         </section>
 
@@ -91,6 +92,8 @@
           <div class="panel-tabs">
             <button type="button" class="panel-tab-button active" data-panel-root="dictionaryRootPanel">Dictionary</button>
             <button type="button" class="panel-tab-button" data-panel-root="diagnosticRootPanel">Diagnostic</button>
+            <button type="button" class="panel-tab-button" data-panel-root="judgeRootPanel">Judge</button>
+            <button type="button" class="panel-tab-button" data-panel-root="settingsRootPanel">Settings</button>
           </div>
 
           <section id="dictionaryRootPanel">
@@ -125,6 +128,14 @@
                 <div id="signReferenceCards"></div>
               </div>
             </section>
+          </section>
+
+          <section id="judgeRootPanel" hidden>
+            <div id="judgeRootPanelMount"></div>
+          </section>
+
+          <section id="settingsRootPanel" hidden>
+            <div id="settingsRootPanelMount"></div>
           </section>
 
           <section id="diagnosticRootPanel" hidden>

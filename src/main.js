@@ -13,10 +13,14 @@ import { updateStatus, updateSummary } from "./ui/spellSummaryView.js";
 import { setupTabs } from "./ui/tabs.js";
 import { maybeMountLatencyBench } from "./ui/latencyBench.js";
 import { showTrip as showJudgeTripToast, showClose as showJudgeCloseToast } from "./ui/judgeToast.js";
+import { createJudgeOverlay } from "./ui/judgeOverlay.js";
+import { createJudgePanel } from "./ui/judgePanel.js";
+import { createJudgeHintBubbles } from "./ui/judgeHintBubbles.js";
+import { createSettingsPanel, readSettings } from "./ui/settingsPanel.js";
 
-// M2 judge enablement flag — opt-in via localStorage until M3 wires the
-// settings panel. Read once at module load so we can fire the lazy import
-// only when the user has explicitly turned the judge on.
+// M2 judge enablement flag — opt-in via localStorage / settings panel. The
+// streaming judge orchestrator is wired in main; the settings panel keeps the
+// legacy `wha.llmJudge.enabled` localStorage flag in sync.
 function isJudgeEnabledFromStorage() {
   try {
     if (typeof localStorage === "undefined") return false;
@@ -35,6 +39,13 @@ let pipeline = null;
 let spellIR = null;
 let previousRing = null;
 let resizeObserver = null;
+
+// M3 surface handles. Each is lazily attached based on the settings snapshot.
+let judgeOverlay = null;
+let judgePanel = null;
+let judgeHintBubbles = null;
+let settingsPanel = null;
+let judgeOrchestrator = null;
 
 function setupCanvasSizing() {
   resizeObserver = setupResponsiveCanvasSizing({
@@ -82,7 +93,7 @@ function animationFrame(timestamp) {
       timestamp
     });
   }
-  
+
   renderer.renderEffect({
     spellIR,
     ring: pipeline?.ring,
@@ -118,38 +129,117 @@ function setupControls() {
   updateDiagnosticsMode(elements);
 }
 
-async function maybeWireStreamingJudge() {
-  if (!isJudgeEnabledFromStorage() || !CONFIG.llmJudge?.enabled === false) {
-    // Still allow `?judge=on` URL override for ad-hoc enable without touching localStorage.
-    try {
-      if (typeof window !== "undefined") {
-        const u = new URL(window.location.href);
-        if (u.searchParams.get("judge") !== "on" && !isJudgeEnabledFromStorage()) return;
-      } else {
-        return;
+function setupJudgeSurfaces() {
+  const settings = readSettings();
+  if (elements.judgeOverlayCanvas) {
+    judgeOverlay = createJudgeOverlay({ canvas: elements.judgeOverlayCanvas, settings });
+    judgeOverlay.setEnabled(settings.surfaces.canvasOverlay);
+  }
+  if (elements.judgeRootPanelMount) {
+    judgePanel = createJudgePanel({ mountEl: elements.judgeRootPanelMount, settings });
+  }
+  if (elements.glyphCanvas) {
+    judgeHintBubbles = createJudgeHintBubbles({ canvas: elements.glyphCanvas, settings });
+    judgeHintBubbles.setEnabled(settings.surfaces.hintBubbles);
+  }
+  if (elements.settingsRootPanelMount) {
+    settingsPanel = createSettingsPanel({ mountEl: elements.settingsRootPanelMount });
+  }
+
+  if (typeof document !== "undefined") {
+    document.addEventListener("settings:change", (ev) => {
+      const detail = ev?.detail;
+      const next = detail?.settings;
+      if (!next) return;
+      if (judgeOverlay) judgeOverlay.setEnabled(!!next.surfaces.canvasOverlay);
+      if (judgeHintBubbles) judgeHintBubbles.setEnabled(!!next.surfaces.hintBubbles);
+      // Hot-swap the judge orchestrator on enable/disable.
+      if (detail.section === "judge" && detail.patch && "enabled" in detail.patch) {
+        if (detail.patch.enabled) {
+          maybeWireStreamingJudge();
+        } else if (judgeOrchestrator) {
+          try {
+            judgeOrchestrator.stop();
+          } catch {
+            // ignore
+          }
+          judgeOrchestrator = null;
+        }
       }
-    } catch {
-      return;
+    });
+  }
+}
+
+async function maybeWireStreamingJudge() {
+  // Allow `?judge=on` URL override for ad-hoc enable without touching settings.
+  let urlOverride = false;
+  try {
+    if (typeof window !== "undefined") {
+      const u = new URL(window.location.href);
+      urlOverride = u.searchParams.get("judge") === "on";
     }
+  } catch {
+    // ignore
+  }
+  const settings = readSettings();
+  if (!urlOverride && !settings.judge.enabled && !isJudgeEnabledFromStorage()) {
+    return;
+  }
+  if (judgeOrchestrator) {
+    // Already wired.
+    return;
   }
   try {
     const { createStreamingJudge } = await import("./parser/llmJudge/streamingJudge.js");
-    const judge = createStreamingJudge({
+    judgeOrchestrator = createStreamingJudge({
       canvas: elements.glyphCanvas,
       proxyUrl: CONFIG.llmJudge.proxyUrl,
-      mode: CONFIG.llmJudge.mode,
+      mode: settings.judge.mode ?? CONFIG.llmJudge.mode,
       groqHeadStartMs: CONFIG.llmJudge.groqHeadStartMs,
       diffThreshold: CONFIG.llmJudge.diffThreshold,
       idleTickMs: CONFIG.llmJudge.idleTickMs,
       debounceMs: CONFIG.llmJudge.debounceMs,
-      alwaysCritique: CONFIG.llmJudge.alwaysCritique,
+      alwaysCritique: settings.judge.alwaysCritique ?? CONFIG.llmJudge.alwaysCritique,
       dictionary,
       onPartial: (partial, source) => {
-        // M2 logs only; M3 connects this to the overlay / panel UI.
         console.debug("[judge.partial]", source, partial);
+        try {
+          judgeOverlay?.onPartial(partial);
+        } catch (err) {
+          console.warn("[judge.overlay.partial]", err);
+        }
+        try {
+          judgePanel?.onPartial(partial, source);
+        } catch (err) {
+          console.warn("[judge.panel.partial]", err);
+        }
+        try {
+          if (typeof partial?.hint === "string" && partial.hint.trim()) {
+            judgeHintBubbles?.onHint(partial.hint);
+          }
+        } catch (err) {
+          console.warn("[judge.hint.partial]", err);
+        }
       },
       onFinal: (final, source) => {
         console.debug("[judge.final]", source, final);
+        try {
+          judgeOverlay?.onFinal(final);
+        } catch (err) {
+          console.warn("[judge.overlay.final]", err);
+        }
+        try {
+          judgePanel?.onFinal(final, source);
+        } catch (err) {
+          console.warn("[judge.panel.final]", err);
+        }
+        try {
+          if (typeof final?.hint === "string" && final.hint.trim()) {
+            judgeHintBubbles?.onHint(final.hint);
+          }
+        } catch (err) {
+          console.warn("[judge.hint.final]", err);
+        }
       },
       onError: (err) => {
         console.debug("[judge.error]", err?.message ?? err);
@@ -161,6 +251,11 @@ async function maybeWireStreamingJudge() {
         } catch {
           // ignore — toast is best-effort
         }
+        try {
+          judgePanel?.onCircuitTrip();
+        } catch {
+          // ignore
+        }
       },
       onCircuitClose: () => {
         console.info("[judge] circuit closed");
@@ -169,12 +264,22 @@ async function maybeWireStreamingJudge() {
         } catch {
           // ignore
         }
+        try {
+          judgePanel?.onCircuitClose();
+        } catch {
+          // ignore
+        }
       },
       onGuessRevised: (info) => {
         console.debug("[judge.guessRevised]", info);
+        try {
+          judgePanel?.onGuessRevised(info);
+        } catch {
+          // ignore
+        }
       }
     });
-    judge.start();
+    judgeOrchestrator.start();
   } catch (err) {
     console.warn("[judge] failed to initialise", err);
   }
@@ -196,6 +301,8 @@ async function init() {
     onPreview: () => {},
     onCommit: recompute
   });
+
+  setupJudgeSurfaces();
 
   try {
     dictionary = await loadDictionary();

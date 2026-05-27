@@ -1,0 +1,591 @@
+{
+  "capturedAt": "2026-05-27T02:29:16.488Z",
+  "notice": "Pre-edit (M5) baseline of legacy spellQuality + spellBuilder scalars. The legacy fields are preserved by M5; new qualityMetrics live alongside. Update this file ONLY when you intentionally change the legacy formula and have a sensitivity report to justify it.",
+  "records": [
+    {
+      "path": "clean/fire_clean_001.png",
+      "legacyQuality": 0.5492,
+      "legacyStability": 0.5985,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.998
+    },
+    {
+      "path": "clean/fire_clean_002.png",
+      "legacyQuality": 0.5492,
+      "legacyStability": 0.5985,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.998
+    },
+    {
+      "path": "average/fire_average_001.png",
+      "legacyQuality": 0.5472,
+      "legacyStability": 0.59634,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.993
+    },
+    {
+      "path": "average/fire_average_002.png",
+      "legacyQuality": 0.5468,
+      "legacyStability": 0.59598,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.992
+    },
+    {
+      "path": "messy/fire_messy_001.png",
+      "legacyQuality": 0.54,
+      "legacyStability": 0.58878,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.975
+    },
+    {
+      "path": "messy/fire_messy_002.png",
+      "legacyQuality": 0.5424,
+      "legacyStability": 0.5913,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.981
+    },
+    {
+      "path": "clean/water_clean_001.png",
+      "legacyQuality": 0.5488,
+      "legacyStability": 0.59814,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.997
+    },
+    {
+      "path": "clean/water_clean_002.png",
+      "legacyQuality": 0.5492,
+      "legacyStability": 0.5985,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.998
+    },
+    {
+      "path": "average/water_average_001.png",
+      "legacyQuality": 0.5464,
+      "legacyStability": 0.59562,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.991
+    },
+    {
+      "path": "average/water_average_002.png",
+      "legacyQuality": 0.5468,
+      "legacyStability": 0.59598,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.992
+    },
+    {
+      "path": "messy/water_messy_001.png",
+      "legacyQuality": 0.5348,
+      "legacyStability": 0.5832,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.962
+    },
+    {
+      "path": "messy/water_messy_002.png",
+      "legacyQuality": 0.5404,
+      "legacyStability": 0.58914,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.976
+    },
+    {
+      "path": "clean/wind_directs_air_clean_001.png",
+      "legacyQuality": 0.502,
+      "legacyStability": 0.54846,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.88
+    },
+    {
+      "path": "clean/wind_directs_air_clean_002.png",
+      "legacyQuality": 0.502,
+      "legacyStability": 0.54846,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.88
+    },
+    {
+      "path": "average/wind_directs_air_average_001.png",
+      "legacyQuality": 0.5,
+      "legacyStability": 0.5463,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.875
+    },
+    {
+      "path": "average/wind_directs_air_average_002.png",
+      "legacyQuality": 0.5004,
+      "legacyStability": 0.54666,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.876
+    },
+    {
+      "path": "messy/wind_directs_air_messy_001.png",
+      "legacyQuality": 0.4932,
+      "legacyStability": 0.5391,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.858
+    },
+    {
+      "path": "messy/wind_directs_air_messy_002.png",
+      "legacyQuality": 0.4964,
+      "legacyStability": 0.54252,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.866
+    },
+    {
+      "path": "clean/earth_clean_001.png",
+      "legacyQuality": 0.5492,
+      "legacyStability": 0.5985,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.998
+    },
+    {
+      "path": "clean/earth_clean_002.png",
+      "legacyQuality": 0.5492,
+      "legacyStability": 0.5985,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.998
+    },
+    {
+      "path": "average/earth_average_001.png",
+      "legacyQuality": 0.5464,
+      "legacyStability": 0.59562,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.991
+    },
+    {
+      "path": "average/earth_average_002.png",
+      "legacyQuality": 0.5464,
+      "legacyStability": 0.59562,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.991
+    },
+    {
+      "path": "messy/earth_messy_001.png",
+      "legacyQuality": 0.538,
+      "legacyStability": 0.58662,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.97
+    },
+    {
+      "path": "messy/earth_messy_002.png",
+      "legacyQuality": 0.5388,
+      "legacyStability": 0.58752,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.972
+    },
+    {
+      "path": "clean/light_clean_001.png",
+      "legacyQuality": 0.5492,
+      "legacyStability": 0.5985,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.998
+    },
+    {
+      "path": "clean/light_clean_002.png",
+      "legacyQuality": 0.5488,
+      "legacyStability": 0.59814,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.997
+    },
+    {
+      "path": "average/light_average_001.png",
+      "legacyQuality": 0.5452,
+      "legacyStability": 0.59436,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.988
+    },
+    {
+      "path": "average/light_average_002.png",
+      "legacyQuality": 0.5448,
+      "legacyStability": 0.59382,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.987
+    },
+    {
+      "path": "messy/light_messy_001.png",
+      "legacyQuality": 0.5344,
+      "legacyStability": 0.58284,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.961
+    },
+    {
+      "path": "messy/light_messy_002.png",
+      "legacyQuality": 0.5344,
+      "legacyStability": 0.58284,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.961
+    },
+    {
+      "path": "signs/column_clean_001.png",
+      "legacyQuality": 0.05,
+      "legacyStability": 0,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0
+    },
+    {
+      "path": "signs/column_clean_002.png",
+      "legacyQuality": 0.05,
+      "legacyStability": 0,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0
+    },
+    {
+      "path": "signs/column_messy_001.png",
+      "legacyQuality": 0.05,
+      "legacyStability": 0,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0
+    },
+    {
+      "path": "signs/column_messy_002.png",
+      "legacyQuality": 0.05,
+      "legacyStability": 0,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0
+    },
+    {
+      "path": "signs/levitation_clean_001.png",
+      "legacyQuality": 0.05,
+      "legacyStability": 0,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0
+    },
+    {
+      "path": "signs/levitation_clean_002.png",
+      "legacyQuality": 0.05,
+      "legacyStability": 0,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0
+    },
+    {
+      "path": "signs/levitation_messy_001.png",
+      "legacyQuality": 0.05,
+      "legacyStability": 0,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0
+    },
+    {
+      "path": "signs/levitation_messy_002.png",
+      "legacyQuality": 0.05,
+      "legacyStability": 0,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0
+    },
+    {
+      "path": "signs/convergence_clean_001.png",
+      "legacyQuality": 0.05,
+      "legacyStability": 0,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0
+    },
+    {
+      "path": "signs/convergence_clean_002.png",
+      "legacyQuality": 0.05,
+      "legacyStability": 0,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0
+    },
+    {
+      "path": "signs/convergence_messy_001.png",
+      "legacyQuality": 0.05,
+      "legacyStability": 0,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0
+    },
+    {
+      "path": "signs/convergence_messy_002.png",
+      "legacyQuality": 0.05,
+      "legacyStability": 0,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0
+    },
+    {
+      "path": "signs/dispersion_clean_001.png",
+      "legacyQuality": 0.05,
+      "legacyStability": 0,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0
+    },
+    {
+      "path": "signs/dispersion_clean_002.png",
+      "legacyQuality": 0.05,
+      "legacyStability": 0,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0
+    },
+    {
+      "path": "signs/dispersion_messy_001.png",
+      "legacyQuality": 0.05,
+      "legacyStability": 0,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0
+    },
+    {
+      "path": "signs/dispersion_messy_002.png",
+      "legacyQuality": 0.05,
+      "legacyStability": 0,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0
+    },
+    {
+      "path": "signs/direction_clean_001.png",
+      "legacyQuality": 0.05,
+      "legacyStability": 0,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0
+    },
+    {
+      "path": "signs/direction_clean_002.png",
+      "legacyQuality": 0.05,
+      "legacyStability": 0,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0
+    },
+    {
+      "path": "signs/direction_messy_001.png",
+      "legacyQuality": 0.05,
+      "legacyStability": 0,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0
+    },
+    {
+      "path": "signs/direction_messy_002.png",
+      "legacyQuality": 0.05,
+      "legacyStability": 0,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0
+    },
+    {
+      "path": "signs/window_clean_001.png",
+      "legacyQuality": 0.3128,
+      "legacyStability": 0.3474,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.407
+    },
+    {
+      "path": "signs/window_clean_002.png",
+      "legacyQuality": 0.328,
+      "legacyStability": 0.3636,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.445
+    },
+    {
+      "path": "signs/window_messy_001.png",
+      "legacyQuality": 0.05,
+      "legacyStability": 0,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0
+    },
+    {
+      "path": "signs/window_messy_002.png",
+      "legacyQuality": 0.3104,
+      "legacyStability": 0.34488,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.401
+    },
+    {
+      "path": "signs/diamond_clean_001.png",
+      "legacyQuality": 0.3252,
+      "legacyStability": 0.36072,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.438
+    },
+    {
+      "path": "signs/diamond_clean_002.png",
+      "legacyQuality": 0.3248,
+      "legacyStability": 0.36018,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.437
+    },
+    {
+      "path": "signs/diamond_messy_001.png",
+      "legacyQuality": 0.05,
+      "legacyStability": 0,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0
+    },
+    {
+      "path": "signs/diamond_messy_002.png",
+      "legacyQuality": 0.312,
+      "legacyStability": 0.34668,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.405
+    },
+    {
+      "path": "signs/repetition_clean_001.png",
+      "legacyQuality": 0.541657,
+      "legacyStability": 0.52356,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.997
+    },
+    {
+      "path": "signs/repetition_clean_002.png",
+      "legacyQuality": 0.542057,
+      "legacyStability": 0.5241,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.998
+    },
+    {
+      "path": "signs/repetition_messy_001.png",
+      "legacyQuality": 0.532857,
+      "legacyStability": 0.5142,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.975
+    },
+    {
+      "path": "signs/repetition_messy_002.png",
+      "legacyQuality": 0.60555,
+      "legacyStability": 0.7431,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.95
+    },
+    {
+      "path": "nested/memory-erasure_001.png",
+      "legacyQuality": 0.5468,
+      "legacyStability": 0.59598,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.992
+    },
+    {
+      "path": "nested/sylph-shoes_001.png",
+      "legacyQuality": 0.546,
+      "legacyStability": 0.59526,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.99
+    },
+    {
+      "path": "nested/light-reducing_001.png",
+      "legacyQuality": 0.546,
+      "legacyStability": 0.59508,
+      "irQuality": 0,
+      "irStability": 0,
+      "irDuration": 0,
+      "irNeatness": 0.99
+    }
+  ]
+}

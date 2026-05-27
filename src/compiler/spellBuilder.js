@@ -8,7 +8,12 @@ import {
   signInfluence
 } from "./semanticRules.js";
 import { directionFromSurfaceVector } from "./spellDirection.js";
-import { calculateSpellQuality, calculateSpellStability } from "./spellQuality.js";
+import {
+  LENGTH_CAP,
+  calculateSpellQuality,
+  calculateSpellStability,
+  computeQualityMetrics
+} from "./spellQuality.js";
 
 /**
  * Walk the nested-ring tree (M4). Returns a SpellIR fragment describing the
@@ -94,6 +99,29 @@ const PRIMARY_SIGIL_AMBIGUITY_GAP = 0.05;
 
 const SUPPORTED_ELEMENTS = new Set(["fire", "water", "wind", "earth", "light"]);
 
+/**
+ * M5 — Named duration curve constant. The exponent shapes how lifetime
+ * accelerates with quality: at 1.0 it is linear, at 1.45 it skews so that
+ * top-quartile drawings hold significantly longer. Lane 1 audit flagged the
+ * bare `1.45` at spellBuilder.js:31; surfacing it as a named constant gives
+ * future tuners a clear handle, and Principle 5 requires sensitivity tests
+ * before changing it (see `tests/spellQuality.sensitivity.test.js`).
+ */
+const DURATION_EXPONENT = 1.45;
+
+/**
+ * M5 — Power formula tuning. Lane 2 §4 canon: "neatly drawn seals last
+ * longer than messy ones" — cleanliness is the primary mechanic; length is
+ * secondary. Therefore cleanliness weight (0.4) > length weight (0.2).
+ *
+ *   power = base × (1 + cleanliness × CLEANLINESS_POWER_WEIGHT
+ *                     + min(length, LENGTH_CAP) × LENGTH_POWER_WEIGHT)
+ *
+ * Sensitivity at ±0.05 is asserted by `tests/spellQuality.sensitivity.test.js`.
+ */
+const CLEANLINESS_POWER_WEIGHT = 0.4;
+const LENGTH_POWER_WEIGHT = 0.2;
+
 const SPELL_PARAMETER_TUNING = {
   focusBase: 0.46,
   focusQuality: 0.2,
@@ -109,8 +137,26 @@ const SPELL_PARAMETER_TUNING = {
   durationSecondsScale: 6.4,
   durationQualityWeight: 0.35,
   durationNeatnessWeight: 0.65,
-  durationCurve: 1.45
+  // Preserved for back-compat; reads from DURATION_EXPONENT.
+  durationCurve: DURATION_EXPONENT
 };
+
+export { DURATION_EXPONENT, CLEANLINESS_POWER_WEIGHT, LENGTH_POWER_WEIGHT };
+
+/**
+ * Compute spell power multiplier from the explicit qualityMetrics block.
+ * Centralised so tests can assert the formula directly without re-deriving
+ * it from a SpellIR snapshot.
+ *
+ * @param {{ cleanliness: number, length: number }} qualityMetrics
+ * @param {number} [base=1]
+ * @returns {number} the multiplied power value
+ */
+export function computeSpellPower(qualityMetrics, base = 1) {
+  const cleanliness = clamp(qualityMetrics?.cleanliness ?? 0);
+  const length = Math.min(LENGTH_CAP, Math.max(0, qualityMetrics?.length ?? 0));
+  return base * (1 + cleanliness * CLEANLINESS_POWER_WEIGHT + length * LENGTH_POWER_WEIGHT);
+}
 
 const PHYSICS_TUNING = {
   levitationGravityScale: 0.42
@@ -151,6 +197,10 @@ function invalidSpell(status, glyphAST, warnings = []) {
     duration: 0,
     stability: 0,
     quality: 0,
+    // M5 — qualityMetrics still computed on invalid spells so the Quality
+    // panel UI can show partial feedback (e.g. "ring open, length 0.4×").
+    qualityMetrics: computeQualityMetrics(glyphAST),
+    power: 0,
     compositionMode: composition.compositionMode,
     rootRingId: composition.rootRingId,
     coreElement: composition.coreElement,
@@ -239,6 +289,11 @@ export function compileSpell({ glyphAST, config }) {
   const quality = calculateSpellQuality(glyphAST);
   const stability = calculateSpellStability(glyphAST, config);
   const neatness = glyphAST.globalMetrics?.neatness ?? quality;
+  // M5 — explicit qualityMetrics block consumed by the Quality panel UI and
+  // the new power formula. Cleanliness dominates (canon: neatly drawn seals
+  // last longer than messy ones); length is the secondary mechanic.
+  const qualityMetrics = computeQualityMetrics(glyphAST);
+  const power = computeSpellPower(qualityMetrics);
   const { primaryManifestation, manifestations, manifestationInfluence } = aggregateManifestations(signs);
   const deltas = aggregateSemanticDeltas(signs);
   const surfaceDirection = signs.length ? combineSignDirection(signs) : { x: 0, y: 0, strength: 0 };
@@ -307,6 +362,8 @@ export function compileSpell({ glyphAST, config }) {
     duration,
     stability,
     quality,
+    qualityMetrics,
+    power,
     compositionMode: composition.compositionMode,
     rootRingId: composition.rootRingId,
     coreElement: composition.coreElement ?? primary.element,

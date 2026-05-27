@@ -13,7 +13,7 @@
  */
 
 import assert from "node:assert/strict";
-import test from "node:test";
+import test, { before, after } from "node:test";
 
 let MiniflareCtor = null;
 try {
@@ -21,6 +21,26 @@ try {
 } catch {
   MiniflareCtor = null;
 }
+
+// Shared miniflare instance — startup is the slow part (~30-60s), so we pay
+// it once for the whole file instead of per-test.
+let mf = null;
+
+before(async () => {
+  if (!MiniflareCtor) return;
+  mf = new MiniflareCtor({
+    modules: true,
+    script: workerScript,
+    compatibilityDate: "2025-01-01"
+  });
+});
+
+after(async () => {
+  if (mf) {
+    await mf.dispose();
+    mf = null;
+  }
+});
 
 const workerScript = `
   function sseEvent(payload) {
@@ -58,46 +78,28 @@ const workerScript = `
 `;
 
 test("miniflare: POST /api/judge returns a normalised SSE stream", async (t) => {
-  if (!MiniflareCtor) {
+  if (!mf) {
     t.skip("miniflare not available");
     return;
   }
-  const mf = new MiniflareCtor({
-    modules: true,
-    script: workerScript,
-    compatibilityDate: "2025-01-01"
+  const res = await mf.dispatchFetch("http://localhost/api/judge", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ mode: "fast", provider: "groq", image: "", prompt: "" })
   });
-  try {
-    const res = await mf.dispatchFetch("http://localhost/api/judge", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mode: "fast", provider: "groq", image: "", prompt: "" })
-    });
-    assert.equal(res.status, 200);
-    const text = await res.text();
-    assert.ok(text.includes("token-delta"), "must contain a token-delta event");
-    assert.ok(text.includes("done"), "must contain a done event");
-  } finally {
-    await mf.dispose();
-  }
+  assert.equal(res.status, 200);
+  const text = await res.text();
+  assert.ok(text.includes("token-delta"), "must contain a token-delta event");
+  assert.ok(text.includes("done"), "must contain a done event");
 });
 
 test("miniflare: GET /api/health returns ok", async (t) => {
-  if (!MiniflareCtor) {
+  if (!mf) {
     t.skip("miniflare not available");
     return;
   }
-  const mf = new MiniflareCtor({
-    modules: true,
-    script: workerScript,
-    compatibilityDate: "2025-01-01"
-  });
-  try {
-    const res = await mf.dispatchFetch("http://localhost/api/health");
-    assert.equal(res.status, 200);
-    const obj = await res.json();
-    assert.equal(obj.ok, true);
-  } finally {
-    await mf.dispose();
-  }
+  const res = await mf.dispatchFetch("http://localhost/api/health");
+  assert.equal(res.status, 200);
+  const obj = await res.json();
+  assert.equal(obj.ok, true);
 });
