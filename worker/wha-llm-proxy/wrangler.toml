@@ -13,7 +13,7 @@ preview_id = "REPLACE_WITH_KV_PREVIEW_ID"
 
 [[analytics_engine_datasets]]
 binding = "JUDGE_ANALYTICS"
-dataset = "judge_analytics"
+dataset = "judge_analytics_v1"
 
 [vars]
 PROVIDER_GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"

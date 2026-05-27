@@ -1,0 +1,79 @@
+# WHA Spell Simulator — Alert Rules
+#
+# Format: [alert.<name>]
+# Each section defines a Workers Analytics Engine alert threshold.
+# "query" is the SQL fragment that must evaluate to a numeric rate/value.
+# Alerts are evaluated by the monitoring layer (e.g. Cloudflare notifications,
+# external cron hitting the Analytics Engine SQL API, or PagerDuty webhook).
+#
+# Runbook: see runbook.md in this directory for response procedures.
+
+[alert.breaker_trip_rate_5min]
+description   = "Circuit-breaker trip rate exceeded 5% over a 5-minute window"
+query         = """
+  SELECT round(100.0 * sum(double4) / count(), 2) AS rate_pct
+  FROM judge_analytics_v1
+  WHERE timestamp >= now() - INTERVAL '5' MINUTE
+"""
+threshold     = 5.0          # percent
+window        = "5m"
+operator      = ">"
+severity      = "critical"
+action        = "PagerDuty: ops"
+runbook       = "https://your-wiki/runbooks/wha/breaker-trip-rate"
+
+[alert.dsl_invalid_rate_1hr]
+description   = "DSL-invalid rate exceeded 5% over a 1-hour window — possible prompt drift"
+query         = """
+  SELECT round(100.0 * sum(double5) / count(), 2) AS rate_pct
+  FROM judge_analytics_v1
+  WHERE timestamp >= now() - INTERVAL '1' HOUR
+"""
+threshold     = 5.0          # percent
+window        = "1h"
+operator      = ">"
+severity      = "warning"
+action        = "PagerDuty: prompt-review"
+runbook       = "https://your-wiki/runbooks/wha/dsl-invalid-rate"
+
+[alert.latency_p95_5min]
+description   = "p95 total request latency exceeded 1500 ms over a 5-minute window"
+query         = """
+  SELECT quantile(0.95)(double2) AS p95_ms
+  FROM judge_analytics_v1
+  WHERE timestamp >= now() - INTERVAL '5' MINUTE
+"""
+threshold     = 1500.0       # milliseconds
+window        = "5m"
+operator      = ">"
+severity      = "critical"
+action        = "PagerDuty: infrastructure"
+runbook       = "https://your-wiki/runbooks/wha/latency-p95"
+
+[alert.judge_template_disagreement_rate]
+description   = "Judge↔template disagreement rate exceeded 20% — possible prompt regression"
+query         = """
+  SELECT round(100.0 * sum(double7) / count(), 2) AS rate_pct
+  FROM judge_analytics_v1
+  WHERE timestamp >= now() - INTERVAL '1' HOUR
+"""
+threshold     = 20.0         # percent
+window        = "1h"
+operator      = ">"
+severity      = "warning"
+action        = "PagerDuty: prompt-review"
+runbook       = "https://your-wiki/runbooks/wha/judge-template-disagreement"
+
+[alert.kv_rate_limit_hit_rate]
+description   = "KV rate-limit hit rate exceeded 10% — consider raising RATE_LIMIT_PER_MIN"
+query         = """
+  SELECT round(100.0 * sum(double6) / count(), 2) AS rate_pct
+  FROM judge_analytics_v1
+  WHERE timestamp >= now() - INTERVAL '5' MINUTE
+"""
+threshold     = 10.0         # percent
+window        = "5m"
+operator      = ">"
+severity      = "warning"
+action        = "PagerDuty: infrastructure"
+runbook       = "https://your-wiki/runbooks/wha/kv-rate-limit"

@@ -5,9 +5,35 @@
  *
  * Schema (Analytics Engine writeDataPoint contract):
  *   blobs:   [provider, mode, eventKind, reasonCode]
- *   doubles: [statusCode, durationMs, ttftMs, breakerTrip, dslInvalid, rateLimited, judgeTemplateDisagreement]
+ *   doubles: [statusCode, durationMs, ttftMs, breakerTrip, dslInvalid,
+ *             rateLimited, judgeTemplateDisagreement, costPerSpellUsd]
  *   indexes: [provider]
+ *
+ * judgeTemplateDisagreement is a derived metric: logged as 1 when the
+ * caller has already compared judge top-1 vs template top-1 and found a
+ * mismatch. The dashboard computes the disagreement rate from this field.
  */
+
+/** Input/output token rates in USD per 1 million tokens: [input, output]. */
+const PROVIDER_RATES: Record<string, [number, number]> = {
+  groq:       [0.20, 0.60],
+  sambanova:  [0.63, 1.80],
+  anthropic:  [5.00, 25.00],
+};
+
+/**
+ * Estimate cost in USD for a single request.
+ * Returns 0 when token counts are unavailable.
+ */
+export function estimateCost(
+  provider: string,
+  inputTokens: number,
+  outputTokens: number
+): number {
+  const rates = PROVIDER_RATES[provider.toLowerCase()];
+  if (!rates || !inputTokens || !outputTokens) return 0;
+  return (inputTokens * rates[0] + outputTokens * rates[1]) / 1_000_000;
+}
 
 export interface AnalyticsRecord {
   provider: string;
@@ -21,6 +47,8 @@ export interface AnalyticsRecord {
   judgeTemplateDisagreement?: boolean;
   reasonCode?: string;
   eventKind?: string;
+  /** Pre-computed cost (USD). Use estimateCost() to derive from token counts. */
+  costPerSpellUsd?: number;
 }
 
 export interface AnalyticsBinding {
@@ -47,7 +75,8 @@ export function emitAnalytics(env: AnalyticsEnv, rec: AnalyticsRecord): void {
         rec.breakerOpen ? 1 : 0,
         rec.dslInvalid ? 1 : 0,
         rec.rateLimited ? 1 : 0,
-        rec.judgeTemplateDisagreement ? 1 : 0
+        rec.judgeTemplateDisagreement ? 1 : 0,
+        rec.costPerSpellUsd ?? 0
       ],
       indexes: [rec.provider ?? "n/a"]
     });

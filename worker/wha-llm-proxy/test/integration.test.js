@@ -26,22 +26,6 @@ try {
 // it once for the whole file instead of per-test.
 let mf = null;
 
-before(async () => {
-  if (!MiniflareCtor) return;
-  mf = new MiniflareCtor({
-    modules: true,
-    script: workerScript,
-    compatibilityDate: "2025-01-01"
-  });
-});
-
-after(async () => {
-  if (mf) {
-    await mf.dispose();
-    mf = null;
-  }
-});
-
 const workerScript = `
   function sseEvent(payload) {
     return new TextEncoder().encode("data: " + JSON.stringify(payload) + "\\n\\n");
@@ -76,6 +60,22 @@ const workerScript = `
     }
   };
 `;
+
+before(async () => {
+  if (!MiniflareCtor) return;
+  mf = new MiniflareCtor({
+    modules: true,
+    script: workerScript,
+    compatibilityDate: "2025-01-01"
+  });
+});
+
+after(async () => {
+  if (mf) {
+    await mf.dispose();
+    mf = null;
+  }
+});
 
 test("miniflare: POST /api/judge returns a normalised SSE stream", async (t) => {
   if (!mf) {
