@@ -266,10 +266,14 @@ test("recognizes signs in the ring-relative orientation for their position", () 
   );
 });
 
-test("rejects a sign drawn in the wrong orientation for its ring position", () => {
+test("recognizes a sign drawn 180° from canonical as a flipped variant (M4)", () => {
   const column = realDictionary.signs.find((entry) => entry.id === "column");
   assert.ok(column);
 
+  // A column placed at the top of the ring without rotating its strokes is
+  // upside-down relative to the canonical bottom-of-ring frame. Pre-M4 we
+  // rejected this. M4 now treats it as a flipped column so the compiler can
+  // invert its semantic deltas.
   const topButUnrotatedColumn = cleanCandidateFromTemplate(column, {
     layer: "outer",
     angleDeg: 90
@@ -277,7 +281,8 @@ test("rejects a sign drawn in the wrong orientation for its ring position", () =
 
   const [recognition] = recognizeCandidates([topButUnrotatedColumn], realDictionary, CONFIG);
 
-  assert.notEqual(recognition.id, "column");
+  assert.equal(recognition.id, "column");
+  assert.equal(recognition.flipped, true);
 });
 
 test("does not recognize a lone line as the column sign", () => {

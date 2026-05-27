@@ -7,18 +7,45 @@ import {
 
 const CANONICAL_SIGN_ANGLE_DEG = 270;
 const SIGN_ROTATION_TOLERANCE_DEG = 15;
+// M4: how close to a perfect 180° rotation the matcher result must be before
+// the candidate is tagged as `flipped`. We allow the same tolerance as the
+// upright matcher so a flipped sign that drifted slightly still trips the flag.
+const SIGN_FLIP_TOLERANCE_DEG = 25;
 
-// Based on what observed in fan's wiki: Sign templates are authored/registered 
+// Based on what observed in fan's wiki: Sign templates are authored/registered
 // as if the sign sits at the bottom of the ring.
 // Rotate a copy of each sign candidate into that frame before template matching.
 function signCandidateToTemplateRotationDeg(candidateAngleDeg) {
   return normalizeAngleDeg((candidateAngleDeg ?? CANONICAL_SIGN_ANGLE_DEG) - CANONICAL_SIGN_ANGLE_DEG);
 }
 
-// After the ring-relative rotation, only allow a small matching wiggle. Larger
-// rotations would erase orientation, which is part of sign meaning.
+// After the ring-relative rotation, allow a small matching wiggle plus a
+// 180°-flipped slot. A flipped sign is a meaningful inversion in canon
+// (enlarge ↔ reduce, wall-breaker ↔ integration), so we look for it
+// explicitly rather than letting it score as a different sign.
 function signRecognitionRotations() {
-  return [normalizeAngleDeg(-SIGN_ROTATION_TOLERANCE_DEG), 0, SIGN_ROTATION_TOLERANCE_DEG];
+  return [
+    normalizeAngleDeg(-SIGN_ROTATION_TOLERANCE_DEG),
+    0,
+    SIGN_ROTATION_TOLERANCE_DEG,
+    180,
+    normalizeAngleDeg(180 - SIGN_ROTATION_TOLERANCE_DEG),
+    normalizeAngleDeg(180 + SIGN_ROTATION_TOLERANCE_DEG)
+  ];
+}
+
+/**
+ * Returns true when `rotationDeg` describes a roughly-180° flip relative to
+ * the upright template frame. Used by the recognizer to stamp `flipped: true`
+ * on the recognised sign so the semantic-rules layer can invert its deltas.
+ */
+export function isFlippedRotationDeg(rotationDeg) {
+  if (rotationDeg === undefined || rotationDeg === null) {
+    return false;
+  }
+  const normalized = normalizeAngleDeg(rotationDeg);
+  const distanceFrom180 = Math.min(Math.abs(normalized - 180), Math.abs(360 - normalized - 180));
+  return distanceFrom180 <= SIGN_FLIP_TOLERANCE_DEG;
 }
 
 function rotationTransform(degrees) {

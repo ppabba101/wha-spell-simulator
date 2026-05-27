@@ -275,6 +275,21 @@ export function combineSignDirection(signs) {
   };
 }
 
+/**
+ * M4: when a sign is rotated 180° from canonical, its semantic effect is
+ * inverted. We negate the contribution of `force`, `focus`, `spread`, and
+ * `range`. `lifetimeBias` is also negated so a flipped lifetime-extender
+ * shortens the spell instead of lengthening it.
+ *
+ * The inversion is applied to the (semantic + featureDelta) sum before the
+ * influence weighting so a flipped sign's net contribution mirrors its
+ * unflipped twin within the tolerance the test suite asserts (≤ 0.01 on
+ * paired inversions like enlarge ↔ reduce).
+ */
+function appliedDirection(sign, value) {
+  return sign.flipped ? -value : value;
+}
+
 export function aggregateSemanticDeltas(signs) {
   return signs.reduce(
     (sum, sign) => {
@@ -284,7 +299,7 @@ export function aggregateSemanticDeltas(signs) {
       return Object.fromEntries(
         DELTA_TARGETS.map((target) => [
           target,
-          sum[target] + ((semantic[target] ?? 0) + featureDeltas[target]) * influence
+          sum[target] + appliedDirection(sign, (semantic[target] ?? 0) + featureDeltas[target]) * influence
         ])
       );
     },

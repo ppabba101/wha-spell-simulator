@@ -1,4 +1,5 @@
 import { GLYPH_WARNINGS } from "../parser/glyphWarnings.js";
+import { getOuterRing, walkRings } from "../parser/ringTree.js";
 import { clamp } from "../utils/geometry.js";
 import {
   aggregateManifestations,
@@ -8,6 +9,86 @@ import {
 } from "./semanticRules.js";
 import { directionFromSurfaceVector } from "./spellDirection.js";
 import { calculateSpellQuality, calculateSpellStability } from "./spellQuality.js";
+
+/**
+ * Walk the nested-ring tree (M4). Returns a SpellIR fragment describing the
+ * composition:
+ *   compositionMode  — 'single' (no inner rings), 'nested' (≥1 child)
+ *   rootRingId       — index of the outer activation ring (always 0 from the
+ *                      detector ordering)
+ *   coreElement      — innermost-ring element if any; else null (resolved
+ *                      against the primarySigil semantic later)
+ *   modifierLayers   — [{ ringId, depth, signs }] from outer→inner
+ *   ringCount        — total ring nodes
+ *
+ * Sign attribution heuristic: a sign attaches to the smallest ring whose disc
+ * fully contains the sign centroid (closest annulus). The detector currently
+ * does not stamp signs onto ring nodes directly, so we keep the heuristic
+ * here for backward compatibility. When `glyphAST.signs` is the only source,
+ * we attribute them all to the outer ring.
+ */
+function composeNestedRings(glyphAST) {
+  const rings = Array.isArray(glyphAST?.rings) ? glyphAST.rings : [];
+  const tree = rings.length ? rings : glyphAST?.ring ? [glyphAST.ring] : [];
+
+  let ringCount = 0;
+  const layers = [];
+  let innermost = null;
+
+  for (const { ring, depth } of walkRings(tree)) {
+    ringCount += 1;
+    layers.push({
+      ringId: ringCount - 1,
+      depth,
+      ringComplete: Boolean(ring.complete),
+      ringRadius: ring.radius,
+      // Signs attached to this specific ring (M4 step: detector does not yet
+      // attribute signs per ring, so this stays empty by default and the
+      // overall sign list lives on glyphAST.signs).
+      signs: []
+    });
+    if (!innermost || depth > innermost.depth) {
+      innermost = { ring, depth };
+    }
+  }
+
+  // Attribute every sign to the innermost ring whose disc contains its
+  // centroid. We use the sign's radial position on the outer ring as a proxy
+  // since the parser already normalises to the outer ring.
+  const allSigns = glyphAST?.signs ?? [];
+  const outerRing = getOuterRing(glyphAST);
+  if (outerRing && layers.length) {
+    for (const sign of allSigns) {
+      const radiusNorm = sign.radiusNorm ?? 1;
+      // Map radiusNorm (0 inside ring → 1 at boundary of outer ring) to the
+      // ring whose normalised radius bracket it falls into. For a nested
+      // tree, depth-N ring lives roughly at radiusNorm ≤ depth-N inner cap.
+      let chosenIndex = 0;
+      // Walk in increasing depth and pick the deepest ring whose proportional
+      // radius (child.radius / outer.radius) is ≥ radiusNorm; that means the
+      // sign sits inside that ring's disc.
+      for (let i = 0; i < layers.length; i += 1) {
+        const node = layers[i];
+        const proportion = node.ringRadius / Math.max(1, outerRing.radius);
+        if (proportion >= radiusNorm) {
+          chosenIndex = i;
+        }
+      }
+      layers[chosenIndex].signs.push(sign);
+    }
+  } else if (layers.length) {
+    // No outer ring metadata: dump everything onto the outermost layer.
+    layers[0].signs.push(...allSigns);
+  }
+
+  return {
+    compositionMode: layers.length > 1 ? "nested" : "single",
+    rootRingId: 0,
+    coreElement: innermost?.ring?.element ?? null,
+    modifierLayers: layers,
+    ringCount
+  };
+}
 
 const PRIMARY_SIGIL_AMBIGUITY_GAP = 0.05;
 
@@ -43,8 +124,10 @@ function sameKindAlternateConfidence(recognition) {
 }
 
 function invalidSpell(status, glyphAST, warnings = []) {
-  const ringComplete = Boolean(glyphAST.ring?.complete);
+  const outer = getOuterRing(glyphAST);
+  const ringComplete = Boolean(outer?.complete);
   const combinedWarnings = [...new Set([...(glyphAST.warnings ?? []), ...warnings])];
+  const composition = composeNestedRings(glyphAST);
   return {
     type: "SpellIR",
     active: false,
@@ -68,9 +151,14 @@ function invalidSpell(status, glyphAST, warnings = []) {
     duration: 0,
     stability: 0,
     quality: 0,
+    compositionMode: composition.compositionMode,
+    rootRingId: composition.rootRingId,
+    coreElement: composition.coreElement,
+    modifierLayers: composition.modifierLayers,
+    ringCount: composition.ringCount,
     neatness: glyphAST.globalMetrics?.neatness ?? 0,
     warnings: combinedWarnings,
-    signature: `invalid:${status}:${ringComplete}:${glyphAST.ring?.completeness ?? 0}`
+    signature: `invalid:${status}:${ringComplete}:${outer?.completeness ?? 0}`
   };
 }
 
@@ -108,11 +196,16 @@ function calculateSpellDuration({ primarySemantic, deltas, quality, neatness }) 
 }
 
 export function compileSpell({ glyphAST, config }) {
-  if (!glyphAST?.ring?.found) {
+  const outerRing = getOuterRing(glyphAST);
+  if (!outerRing?.found) {
     return invalidSpell("No ring detected", glyphAST ?? { globalMetrics: {} });
   }
 
-  if (glyphAST.ring.unsupportedMultipleRings?.length) {
+  // M4: nested rings are no longer rejected — only true sibling rings sitting
+  // at the same top level are still listed as unsupportedMultipleRings by the
+  // detector. We continue to reject those because cross-ring linkage will be
+  // handled by a later milestone.
+  if (outerRing.unsupportedMultipleRings?.length) {
     return invalidSpell("Multiple rings detected", glyphAST, [GLYPH_WARNINGS.unsupportedMultipleRings]);
   }
 
@@ -151,8 +244,9 @@ export function compileSpell({ glyphAST, config }) {
   const surfaceDirection = signs.length ? combineSignDirection(signs) : { x: 0, y: 0, strength: 0 };
   const directionCoherence = surfaceDirection.strength ?? 0;
   const signPower = signs.reduce((sum, sign) => sum + signInfluence(sign), 0);
-  const active = Boolean(glyphAST.ring.complete);
+  const active = Boolean(outerRing.complete);
   const prepared = !active;
+  const composition = composeNestedRings(glyphAST);
   const primarySemantic = primary.semantic ?? {};
   const effectScale = clamp(
     config.renderer.effectSize.baseScale + primary.sizeNorm * config.renderer.effectSize.sigilSizeInfluence,
@@ -213,6 +307,11 @@ export function compileSpell({ glyphAST, config }) {
     duration,
     stability,
     quality,
+    compositionMode: composition.compositionMode,
+    rootRingId: composition.rootRingId,
+    coreElement: composition.coreElement ?? primary.element,
+    modifierLayers: composition.modifierLayers,
+    ringCount: composition.ringCount,
     neatness,
     warnings: glyphAST.warnings ?? [],
     signature: `${primary.id}:${manifestationSignature(manifestations)}:${active}:${Math.round(effectScale * 100)}:${Math.round(

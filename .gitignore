@@ -9,3 +9,23 @@
 node_modules/
 dist/
 npm-debug.log*
+
+# secrets / env (NEVER commit)
+.env
+.env.*
+!.env.example
+.dev.vars
+.wrangler/
+worker/wha-llm-proxy/.dev.vars
+worker/wha-llm-proxy/.wrangler/
+
+# playwright test artifacts
+test-results/
+playwright-report/
+
+# transient logs
+*.log
+
+# orchestrator transient state (auto-regenerated per session)
+.omc/state/
+.omc/project-memory.json

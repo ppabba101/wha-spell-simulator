@@ -1,7 +1,0 @@
-{
-  "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"npm run dev > /tmp/wha-dev2.log 2>&1 &\\nDEV_PID=$!\\nsleep 3\\n# Fetch a sample module — verifies same-origin module load works under CSP.\\ncurl -sS -w \\\"main.js: HTTP %{http_code}\\\\n\\\" -o /...",
-  "error": "Exit code 143\nmain.js: HTTP 200\nvite-client: HTTP 200\ncss: HTTP 200",
-  "timestamp": "2026-05-27T01:32:24.032Z",
-  "retry_count": 1
-}

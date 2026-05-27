@@ -1,4 +1,5 @@
 import { GLYPH_WARNINGS } from "../parser/glyphWarnings.js";
+import { getOuterRing } from "../parser/ringTree.js";
 import { clamp, mean } from "../utils/geometry.js";
 
 const QUALITY_TUNING = {
@@ -36,7 +37,7 @@ function topMatchCompetitorConfidence(recognition) {
 }
 
 export function calculateSpellQuality(glyphAST) {
-  const ringQuality = glyphAST.ring?.neatness ?? 0;
+  const ringQuality = getOuterRing(glyphAST)?.neatness ?? 0;
   const primaryConfidence = glyphAST.primarySigil?.confidence ?? 0;
   const signConfidence = mean((glyphAST.signs ?? []).map((sign) => sign.confidence));
   const globalNeatness = glyphAST.globalMetrics?.neatness ?? 0;
@@ -55,7 +56,7 @@ export function calculateSpellQuality(glyphAST) {
 }
 
 export function calculateSpellStability(glyphAST, config) {
-  const ringNeatness = glyphAST.ring?.neatness ?? 0;
+  const ringNeatness = getOuterRing(glyphAST)?.neatness ?? 0;
   const symbolNeatness = mean([
     glyphAST.primarySigil?.neatness ?? 0,
     ...(glyphAST.signs ?? []).map((sign) => sign.neatness)

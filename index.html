@@ -4,11 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--
-      M1 placeholder Content-Security-Policy. M2 widens connect-src to include
-      the Worker + Groq + SambaNova + Anthropic origins. Do NOT remove the
-      'default-src self' baseline.
+      M2 Content-Security-Policy. Widens connect-src to include the Worker
+      (Cloudflare *.workers.dev) plus the three provider origins so that the
+      escape-hatch user-key direct-call path (Anthropic) and the bench/dev
+      Worker calls all pass CSP. Image-src allows blob: for canvas snapshots.
     -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://*.workers.dev https://api.groq.com https://api.sambanova.ai https://api.anthropic.com">
     <title>Witch Hat Atelier Spell Simulator</title>
     <link rel="icon" href="./assets/favicon.ico">
     <link rel="stylesheet" href="./assets/css/styles.css">

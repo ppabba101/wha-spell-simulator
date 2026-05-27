@@ -130,6 +130,9 @@ function warningList(ring, primarySigil, unsupportedMultipleSigils, unknowns, re
   } else if (!ring.complete) {
     warnings.push(GLYPH_WARNINGS.ringIncomplete);
   }
+  // M4: nested rings are no longer flagged as unsupported, but we keep the
+  // warning code so older diagnostics surfaces still recognise it if some
+  // future detector pass re-introduces the rejection.
   if (ring.unsupportedNestedRings?.length) {
     warnings.push(GLYPH_WARNINGS.unsupportedNestedRing);
   }
@@ -169,6 +172,7 @@ export function classifyDrawing({ strokes, previousRing = null, dictionary, conf
       type: "GlyphAST",
       version: config.appVersion,
       ring,
+      rings: [],
       candidates: [],
       primarySigil: null,
       unsupportedMultipleSigils: [],
@@ -210,6 +214,9 @@ export function classifyDrawing({ strokes, previousRing = null, dictionary, conf
     type: "GlyphAST",
     version: config.appVersion,
     ring,
+    // M4: tree view of all detected rings (outer → children → ...). The legacy
+    // flat `ring` field still mirrors the outer activation ring for back-compat.
+    rings: ring.rings ?? [],
     candidates: candidates.map(stripCandidate),
     primarySigil: stripRecognitionDiagnostics(primarySigil),
     unsupportedMultipleSigils,

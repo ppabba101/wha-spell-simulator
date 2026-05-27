@@ -7,7 +7,7 @@ import {
   pathLength,
   strokeLength
 } from "../utils/geometry.js";
-import { recognitionPlanForSymbol } from "./signRotation.js";
+import { isFlippedRotationDeg, recognitionPlanForSymbol } from "./signRotation.js";
 import { scoreStrokeTemplate } from "./templateMatcher.js";
 
 const RECOGNITION_AMBIGUITY_GAP = 0.065;
@@ -281,6 +281,10 @@ function scoreByStrokeTemplate(kind, entry, candidate, features) {
   const rawTemplateMatch = scoreStrokeTemplate(recognitionPlan.candidate, strokeTemplate, recognitionPlan.options);
   const templateMatch = {
     ...rawTemplateMatch,
+    // The raw rotation is the additional rotation found *after* the candidate
+    // was positioned into the canonical frame. M4 uses this for flip detection
+    // (180° means the strokes are upside-down within the canonical frame).
+    rawRotationDeg: rawTemplateMatch.rotationDeg ?? 0,
     rotationDeg: normalizeAngleDeg(recognitionPlan.baseRotationDeg + (rawTemplateMatch.rotationDeg ?? 0)),
     recognitionRotationDeg:
       normalizeAngleDeg(
@@ -413,6 +417,15 @@ export function recognizeCandidates(candidates, dictionary, config) {
         }
       : null;
 
+    // M4: detect flipped (180°) sign orientations. We use the *raw* rotation
+    // from the matcher — the additional rotation applied AFTER the candidate
+    // had been re-positioned into the canonical bottom-of-ring frame. A
+    // flipped sign is one whose best matching post-position rotation sits
+    // near 180°. We deliberately exclude the base-position rotation so signs
+    // drawn in canonical orientation at any ring angle are *not* tagged.
+    const flipRotation = bestTemplateMatch?.rawRotationDeg ?? 0;
+    const flipped = accepted && best.kind === "sign" && isFlippedRotationDeg(flipRotation);
+
     return {
       ...publicCandidate(candidate),
       recognized: accepted,
@@ -422,6 +435,7 @@ export function recognizeCandidates(candidates, dictionary, config) {
       displayName: accepted ? best.entry.displayName : null,
       element: accepted ? best.entry.element ?? null : null,
       semantic: accepted ? best.entry.semantic ?? null : null,
+      flipped,
       confidence: accepted ? best.confidence : 0,
       shape: {
         strokeCount: features.strokeCount,

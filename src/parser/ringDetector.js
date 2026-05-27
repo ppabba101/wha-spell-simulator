@@ -11,6 +11,7 @@ import {
   strokeLength
 } from "../utils/geometry.js";
 import { analyzeTopologicalClosure } from "./topologicalFloodFill.js";
+import { buildRingTree } from "./ringTree.js";
 
 const MIN_CLOSURE_RELEVANT_POINT_RATIO = 0.15;
 const RING_BIN_COUNT = 96;
@@ -492,6 +493,43 @@ function summarizeUnsupportedRing(candidate) {
   };
 }
 
+// Summary stripped to the fields a downstream consumer needs from each Ring
+// node. The detector keeps strokeIds + geometry + completeness so the compiler
+// can resolve annulus sign membership and the renderer can draw the ring.
+function summarizeRingNode(candidate) {
+  return {
+    center: candidate.center,
+    centerX: candidate.center?.x,
+    centerY: candidate.center?.y,
+    radius: candidate.radius,
+    complete: candidate.complete,
+    completeness: candidate.completeness,
+    neatness: candidate.neatness,
+    roundness: candidate.roundness,
+    coverageRatio: candidate.coverageRatio,
+    gap: candidate.gap,
+    gapArcLength: candidate.gapArcLength,
+    lineSmoothness: candidate.lineSmoothness,
+    overdrawAmount: candidate.overdrawAmount,
+    strokeIds: candidate.strokeIds
+  };
+}
+
+// A nested ring is one whose centre is strictly inside another (larger) ring.
+// We split the distinct ring list into nested vs sibling-at-top-level so the
+// activation rule keeps the existing semantics: only the outer-most ring's
+// closure fires the spell, and unrelated multiple rings are still rejected.
+function isStrictlyNested(child, parent) {
+  if (child === parent) {
+    return false;
+  }
+  if (child.radius >= parent.radius) {
+    return false;
+  }
+  const centerDistance = distance(child.center, parent.center);
+  return centerDistance < parent.radius;
+}
+
 // Ring detection combines a geometric prepared-ring pass with a topological
 // sealed-ring pass:
 // 1. Build open candidates by fitting circles to long seed strokes, gathering
@@ -523,23 +561,36 @@ export function detectRing(strokes, previousRing, config) {
       completeness: 0,
       activationEvent: false,
       strokeIds: [],
+      rings: [],
       unsupportedNestedRings: []
     };
   }
 
   candidates.sort((a, b) => Number(b.complete) - Number(a.complete) || b.score + b.radius * 0.001 - (a.score + a.radius * 0.001));
   const distinctRings = distinctRingCandidates(candidates);
-  const ring = distinctRings[0];
-  const unsupportedMultipleRings = distinctRings.slice(1).map(summarizeUnsupportedRing);
-  const unsupportedNestedRings = distinctRings
-    .slice(1)
-    .filter(
-      (candidate) =>
-        candidate.radius < ring.radius * 0.78 &&
-        candidate.roundness >= 0.68 &&
-        candidate.complete
-    )
-    .map(summarizeUnsupportedRing);
+
+  // M4: pick the outer-most ring as the activation gate (the largest distinct
+  // candidate). Rings strictly inside it are no longer rejected — they become
+  // nested children. Only rings that sit at the same top level (true siblings)
+  // continue to count as unsupported multiple rings.
+  const ring = [...distinctRings].sort((a, b) => b.radius - a.radius)[0];
+
+  const otherDistinctRings = distinctRings.filter((candidate) => candidate !== ring);
+  const trulySiblingRings = otherDistinctRings.filter((candidate) => !isStrictlyNested(candidate, ring));
+  const nestedRingCandidates = otherDistinctRings.filter((candidate) => isStrictlyNested(candidate, ring));
+
+  // Build the tree of well-formed nested rings rooted at the outer activation
+  // ring. `nestedRingsTree` is the flat top-level (just the outer ring) with
+  // children attached. We expose both shapes:
+  //   `rings` — tree (M4 forward shape)
+  //   `ring`  — outer ring summary (legacy flat shape, includes activation)
+  const ringTree = buildRingTree([ring, ...nestedRingCandidates]);
+
+  const unsupportedMultipleRings = trulySiblingRings.map(summarizeUnsupportedRing);
+  // Backward-compat: legacy `unsupportedNestedRings` still listed for tests
+  // and UI strings that reference the warning, but compilation no longer
+  // treats nested rings as unsupported.
+  const unsupportedNestedRings = [];
 
   const activationEvent = Boolean(
       previousRing?.found &&
@@ -549,8 +600,19 @@ export function detectRing(strokes, previousRing, config) {
       unsupportedMultipleRings.length === 0
   );
 
+  // Flatten the tree into Ring summary nodes (strip closure-internal fields).
+  // We preserve the children → children structure.
+  function summarizeTreeNode(node) {
+    return {
+      ...summarizeRingNode(node),
+      children: (node.children ?? []).map(summarizeTreeNode)
+    };
+  }
+  const rings = ringTree.map(summarizeTreeNode);
+
   return {
     ...ring,
+    rings,
     activationEvent,
     unsupportedNestedRings,
     unsupportedMultipleRings
