@@ -340,6 +340,9 @@ export function createStreamingJudge(opts = {}) {
       probeTimer = null;
       return probe();
     }, CIRCUIT_PROBE_INTERVAL_MS);
+    // If the underlying timer is a Node Timeout, unref so it doesn't keep
+    // the process alive after tests complete.
+    if (probeTimer && typeof probeTimer.unref === "function") probeTimer.unref();
   }
 
   async function probe() {
@@ -398,12 +401,10 @@ export function createStreamingJudge(opts = {}) {
   }
 
   function stop() {
-    if (!started || !canvas) return;
-    started = false;
-    canvas.removeEventListener("pointerdown", onPointerDown);
-    canvas.removeEventListener("pointermove", onPointerMove);
-    canvas.removeEventListener("pointerup", onPointerUp);
-    canvas.removeEventListener("pointercancel", onPointerUp);
+    // Always clear timers + abort in-flight even if start() was never called.
+    // Without this, tests that exercise breaker/probe paths without calling
+    // start() leave a 60s real setTimeout dangling, which node:test waits to
+    // drain — burning minutes of test runtime.
     if (debounceTimer) clearTimer(debounceTimer);
     if (idleTimer) clearTimer(idleTimer);
     if (probeTimer) clearTimer(probeTimer);
@@ -414,6 +415,12 @@ export function createStreamingJudge(opts = {}) {
         // ignore
       }
     }
+    if (!started || !canvas) return;
+    started = false;
+    canvas.removeEventListener("pointerdown", onPointerDown);
+    canvas.removeEventListener("pointermove", onPointerMove);
+    canvas.removeEventListener("pointerup", onPointerUp);
+    canvas.removeEventListener("pointercancel", onPointerUp);
   }
 
   return {
