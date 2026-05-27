@@ -67,6 +67,26 @@ export const DEEP_SYSTEM_PROMPT = [
  * @param {object[]} signs  - from `src/dictionary/signs.json`
  * @returns {string} few-shot text appended after the system prompt
  */
+/**
+ * Few-shot shape anchors for each sign. The judge sees the canonical
+ * primitive composition (Line / Arc / Dot) for every sign in the closed
+ * set so it can identify the new M6 signs (dispersion, direction, window,
+ * diamond, repetition) without confusing them for the existing column /
+ * levitation / convergence shapes.
+ *
+ * Keyed by `id`; values are short WHA-DSL primitive sketches.
+ */
+const SIGN_SHAPE_ANCHORS = {
+  column: "Two Lines: one vertical stem + one horizontal base perpendicular at the bottom.",
+  levitation: "Four Lines: vertical stem, horizontal base, plus two diagonals meeting at a top apex (arrowhead).",
+  convergence: "Three Lines forming a closed triangle with one apex pointing inward (toward the ring center).",
+  dispersion: "Three Lines forming a closed triangle with one apex pointing outward (away from the ring center). Inverse of convergence.",
+  direction: "Two Lines meeting at a single apex — a chevron / V whose point is the direction of effect.",
+  window: "Four Lines forming a closed axis-aligned rectangle (portrait or landscape).",
+  diamond: "Four Lines forming a closed rhombus rotated 45° (vertical-axis diamond).",
+  repetition: "One closed Arc traced as a tight spiral or a single loop returning to its start (cycle motif)."
+};
+
 export function buildFewShotAnchors(sigils, signs) {
   const lines = ["Few-shot anchors (closed-set vocabulary):"];
 
@@ -82,7 +102,8 @@ export function buildFewShotAnchors(sigils, signs) {
     lines.push("Signs (outer band modifiers):");
     for (const s of signs) {
       if (!s?.id) continue;
-      lines.push(`  - ${s.displayName ?? s.id}`);
+      const shape = SIGN_SHAPE_ANCHORS[s.id];
+      lines.push(shape ? `  - ${s.displayName ?? s.id} — ${shape}` : `  - ${s.displayName ?? s.id}`);
     }
   }
 

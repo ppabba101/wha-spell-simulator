@@ -3,6 +3,11 @@ import { drawWaterEffect } from "./effects/waterEffect.js";
 import { drawWindEffect } from "./effects/windEffect.js";
 import { drawEarthEffect } from "./effects/earthEffect.js";
 import { drawLightEffect } from "./effects/lightEffect.js";
+import { drawDispersionEffect } from "./effects/dispersionEffect.js";
+import { drawDirectionEffect } from "./effects/directionEffect.js";
+import { drawWindowEffect } from "./effects/windowEffect.js";
+import { drawDiamondEffect } from "./effects/diamondEffect.js";
+import { drawRepetitionEffect } from "./effects/repetitionEffect.js";
 import { resetParticleState } from "./effects/effectUtils.js";
 import { clamp } from "../utils/geometry.js";
 
@@ -33,6 +38,18 @@ const EFFECTS = {
   earth: drawEarthEffect,
   light: drawLightEffect
 };
+
+// M6 — sign-driven manifestation overlays. Each entry runs ON TOP of the
+// element effect when the matching manifestation has strength > 0. Order is
+// significant: particle layers (dispersion, repetition) render before the
+// outline overlays so the chevron / rectangle / diamond remain readable.
+const MANIFESTATION_OVERLAYS = [
+  { id: "dispersion", draw: drawDispersionEffect },
+  { id: "repetition", draw: drawRepetitionEffect },
+  { id: "window", draw: drawWindowEffect },
+  { id: "diamond", draw: drawDiamondEffect },
+  { id: "direction", draw: drawDirectionEffect }
+];
 
 function spellDurationMs(spellIR) {
   const durationSeconds = Number(spellIR?.duration);
@@ -117,6 +134,20 @@ export class SpellEffectRenderer {
     ctx.globalCompositeOperation = "lighter";
     drawEffect(ctx, this.state, renderSpellIR, ring, dt, this.config);
     ctx.restore();
+
+    // M6 — sign overlays. Each manifestation that the spell carries with a
+    // non-trivial strength contributes an extra visual layer. They are
+    // rendered in source-over so outlines stay legible regardless of element.
+    const manifestations = renderSpellIR.manifestations ?? {};
+    for (const overlay of MANIFESTATION_OVERLAYS) {
+      const strength = manifestations[overlay.id]?.strength ?? 0;
+      if (strength <= 0.001) {
+        continue;
+      }
+      ctx.save();
+      overlay.draw(ctx, this.state, renderSpellIR, ring, dt, this.config);
+      ctx.restore();
+    }
   }
 
   drawRingGlow(ring, isPrepared) {

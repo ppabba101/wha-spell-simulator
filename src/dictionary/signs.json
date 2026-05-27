@@ -93,5 +93,160 @@
         [{"x": 0.52,"y": 0.95}, {"x": 0.5201,"y": 0.95}, {"x": 0.52,"y": 0.9501}]
       ]
     }
+  },
+  {
+    "id": "dispersion",
+    "displayName": "Dispersion",
+    "allowedLayers": [
+      "middle",
+      "outer"
+    ],
+    "sourceNotes": "Dispersion causes the magic of its spell to spread or pour outward — the opposite of convergence. Where convergence focuses a spell into a point, dispersion fans it across a wide angular spread. Used to broadcast effects across an area, like watering a large garden or warming a room. The triangular point typically faces outward (away from the ring center).",
+    "flipPair": "convergence",
+    "semantic": {
+      "manifestation": "dispersion",
+      "directionMode": "inward",
+      "force": -0.08,
+      "focus": -0.32,
+      "spread": 0.36,
+      "range": 0.06,
+      "lifetimeBias": -0.04
+    },
+    "strokeTemplate": {
+      "sourceAspectRatio": 1,
+      "strokes": [
+        [{"x": 0.5,"y": 0.05}, {"x": 0.04,"y": 0.95}, {"x": 0.96,"y": 0.95}, {"x": 0.5,"y": 0.05}]
+      ]
+    }
+  },
+  {
+    "id": "direction",
+    "displayName": "Direction",
+    "allowedLayers": [
+      "middle",
+      "outer"
+    ],
+    "sourceNotes": "Direction controls the vector of the spell's effect. Chevrons all facing forward produce a forward beam; inward-facing chevrons lift the effect upward; outward-facing ones spray it. Drawn as a simple arrowhead/chevron whose apex points the way the spell should travel.",
+    "semantic": {
+      "manifestation": "direction",
+      "directionMode": "orientation",
+      "force": 0.04,
+      "focus": 0.06,
+      "spread": -0.04,
+      "range": 0.18,
+      "lifetimeBias": 0
+    },
+    "strokeTemplate": {
+      "sourceAspectRatio": 1,
+      "strokes": [
+        [{"x": 0.1,"y": 0.8}, {"x": 0.5,"y": 0.15}],
+        [{"x": 0.5,"y": 0.15}, {"x": 0.9,"y": 0.8}]
+      ]
+    }
+  },
+  {
+    "id": "window",
+    "displayName": "Window",
+    "allowedLayers": [
+      "middle",
+      "outer"
+    ],
+    "sourceNotes": "Window is an on-surface aperture limiter: the spell's manifestation is bound to the surface on which the seal is drawn. Used as a frame to confine effects (e.g. a portal stays within the drawn rectangle). A rectangle with the long side touching the seal boundary.",
+    "flipPair": "diamond",
+    "semantic": {
+      "manifestation": "window",
+      "directionMode": "inward",
+      "force": -0.02,
+      "focus": 0.22,
+      "spread": -0.24,
+      "range": -0.14,
+      "lifetimeBias": 0.06
+    },
+    "strokeTemplate": {
+      "sourceAspectRatio": 1,
+      "strokes": [
+        [{"x": 0.18,"y": 0.28}, {"x": 0.82,"y": 0.28}],
+        [{"x": 0.82,"y": 0.28}, {"x": 0.82,"y": 0.72}],
+        [{"x": 0.82,"y": 0.72}, {"x": 0.18,"y": 0.72}],
+        [{"x": 0.18,"y": 0.72}, {"x": 0.18,"y": 0.28}]
+      ]
+    }
+  },
+  {
+    "id": "diamond",
+    "displayName": "Diamond",
+    "allowedLayers": [
+      "middle",
+      "outer"
+    ],
+    "sourceNotes": "Diamond is a nearby-objects aperture limiter: the spell's manifestation is bound to a radius gate around the sigil. Used as a near-field clamp (e.g. an effect that only touches what is close to the seal). Rendered as a rhombus around the sigil.",
+    "flipPair": "window",
+    "semantic": {
+      "manifestation": "diamond",
+      "directionMode": "inward",
+      "force": -0.02,
+      "focus": 0.18,
+      "spread": -0.18,
+      "range": -0.22,
+      "lifetimeBias": 0.06
+    },
+    "strokeTemplate": {
+      "sourceAspectRatio": 1,
+      "strokes": [
+        [{"x": 0.5,"y": 0.1}, {"x": 0.9,"y": 0.5}],
+        [{"x": 0.9,"y": 0.5}, {"x": 0.5,"y": 0.9}],
+        [{"x": 0.5,"y": 0.9}, {"x": 0.1,"y": 0.5}],
+        [{"x": 0.1,"y": 0.5}, {"x": 0.5,"y": 0.1}]
+      ]
+    }
+  },
+  {
+    "id": "repetition",
+    "displayName": "Repetition",
+    "allowedLayers": [
+      "middle",
+      "outer"
+    ],
+    "sourceNotes": "Repetition rewinds or restores — preserves food, cleans surfaces, and reverses small physical changes. Drawn as a tight spiral or a stem-and-loop. The visual signature is a shimmer that materialises outward then rewinds back toward the sigil.",
+    "semantic": {
+      "manifestation": "repetition",
+      "directionMode": "inward",
+      "force": 0.02,
+      "focus": 0.08,
+      "spread": 0,
+      "range": -0.04,
+      "lifetimeBias": 0.24
+    },
+    "strokeTemplate": {
+      "sourceAspectRatio": 1,
+      "strokes": [
+        [
+          {"x": 0.5,"y": 0.5},
+          {"x": 0.55,"y": 0.45},
+          {"x": 0.6,"y": 0.5},
+          {"x": 0.58,"y": 0.58},
+          {"x": 0.5,"y": 0.62},
+          {"x": 0.4,"y": 0.6},
+          {"x": 0.34,"y": 0.5},
+          {"x": 0.36,"y": 0.4},
+          {"x": 0.46,"y": 0.32},
+          {"x": 0.6,"y": 0.32},
+          {"x": 0.72,"y": 0.4},
+          {"x": 0.76,"y": 0.52},
+          {"x": 0.72,"y": 0.66},
+          {"x": 0.6,"y": 0.74},
+          {"x": 0.42,"y": 0.76},
+          {"x": 0.26,"y": 0.7},
+          {"x": 0.18,"y": 0.56},
+          {"x": 0.18,"y": 0.4},
+          {"x": 0.26,"y": 0.24},
+          {"x": 0.42,"y": 0.16},
+          {"x": 0.62,"y": 0.14},
+          {"x": 0.82,"y": 0.22},
+          {"x": 0.9,"y": 0.4},
+          {"x": 0.92,"y": 0.6}
+        ]
+      ]
+    }
   }
 ]
