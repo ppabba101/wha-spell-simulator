@@ -498,6 +498,7 @@ function summarizeUnsupportedRing(candidate) {
 // can resolve annulus sign membership and the renderer can draw the ring.
 function summarizeRingNode(candidate) {
   return {
+    found: true,
     center: candidate.center,
     centerX: candidate.center?.x,
     centerY: candidate.center?.y,

@@ -71,6 +71,51 @@ test("buildRingTree chooses the smallest enclosing parent for three-deep nesting
   assert.equal(tree[0].children[0].children[0].radius, 10);
 });
 
+test("classifyDrawing on a clean ring produces glyphAST.rings[0].found === true (regression: summarizeRingNode dropped `found`)", () => {
+  // Synthesize a clean 32-segment ring inside a typical 1200x800 canvas.
+  // This is the exact failure path users hit: ring drawn, ring detected
+  // internally, but summarizeRingNode stripped `found: true` from the
+  // public glyphAST.rings[] nodes, so compileSpell's
+  // `if (!outerRing?.found) return invalidSpell("No ring detected")`
+  // tripped on every spell.
+  const cx = 600;
+  const cy = 400;
+  const radius = 180;
+  const points = [];
+  for (let i = 0; i <= 64; i += 1) {
+    const t = (i / 64) * Math.PI * 2;
+    points.push({ x: cx + Math.cos(t) * radius, y: cy + Math.sin(t) * radius });
+  }
+  const strokes = [{ id: "ring", points }];
+  const pipeline = classifyDrawing({
+    strokes,
+    previousRing: null,
+    dictionary: realDictionary,
+    config: CONFIG
+  });
+  assert.ok(pipeline.glyphAST, "classifyDrawing should produce a glyphAST");
+  assert.ok(
+    Array.isArray(pipeline.glyphAST.rings) && pipeline.glyphAST.rings.length >= 1,
+    "rings[] should contain the detected ring"
+  );
+  // The fix: every node in glyphAST.rings must carry found: true.
+  for (const ring of pipeline.glyphAST.rings) {
+    assert.equal(
+      ring.found,
+      true,
+      `ring node missing found:true — compileSpell would return "No ring detected"`
+    );
+  }
+  // The integrated guard: spellBuilder.compileSpell receives this AST and
+  // must NOT return the invalid-spell status that the bug produced.
+  const ir = compileSpell({ glyphAST: pipeline.glyphAST, config: CONFIG });
+  assert.notEqual(
+    ir.status,
+    "No ring detected",
+    "compileSpell hit the !outerRing?.found guard on a clean ring — regression"
+  );
+});
+
 test("getOuterRing returns the outermost ring on a tree AST", () => {
   const ast = {
     rings: [
