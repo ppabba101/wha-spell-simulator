@@ -108,14 +108,19 @@ function buildUpstreamRequest(provider: string, body: JudgeRequestBody, env: Env
           "Authorization": `Bearer ${env.GROQ_KEY}`
         },
         body: JSON.stringify({
-          model: body.model ?? "llama-3.2-90b-vision-preview",
+          // Groq deprecated llama-3.2-90b-vision-preview in early 2026.
+          // llama-4-scout is the only maintained /openai/v1 vision endpoint.
+          model: body.model ?? "meta-llama/llama-4-scout-17b-16e-instruct",
           stream: true,
           messages: [
             { role: "system", content: body.prompt ?? "" },
             {
               role: "user",
               content: body.image
-                ? [{ type: "image_url", image_url: { url: body.image } }]
+                ? [
+                    { type: "text", text: "Identify this glyph and return strict WHA-DSL JSON." },
+                    { type: "image_url", image_url: { url: body.image } }
+                  ]
                 : "describe the glyph"
             }
           ]
@@ -140,7 +145,10 @@ function buildUpstreamRequest(provider: string, body: JudgeRequestBody, env: Env
             {
               role: "user",
               content: body.image
-                ? [{ type: "image_url", image_url: { url: body.image } }]
+                ? [
+                    { type: "text", text: "Identify this glyph and return strict WHA-DSL JSON." },
+                    { type: "image_url", image_url: { url: body.image } }
+                  ]
                 : "describe the glyph"
             }
           ]
