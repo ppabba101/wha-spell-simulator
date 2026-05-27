@@ -13,7 +13,9 @@
 import { postJudge } from "./_normalisedClient.js";
 
 export const GROQ_DEFAULTS = Object.freeze({
-  model: "llama-3.2-90b-vision-preview"
+  // Groq deprecated `llama-3.2-90b-vision-preview` in early 2026; only
+  // llama-4-scout remains as a maintained vision endpoint on /openai/v1.
+  model: "meta-llama/llama-4-scout-17b-16e-instruct"
 });
 
 /**
