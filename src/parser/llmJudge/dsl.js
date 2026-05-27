@@ -121,6 +121,7 @@ export const WHA_DSL_SCHEMA = {
         closure: { type: "number", minimum: 1, maximum: 5 },
         cleanliness: { type: "number", minimum: 1, maximum: 5 },
         continuity: { type: "number", minimum: 1, maximum: 5 },
+        length: { type: "number", minimum: 1, maximum: 5 },
         recognizability: { type: "number", minimum: 1, maximum: 5 },
         score: { type: "number", minimum: 1, maximum: 5 }
       }

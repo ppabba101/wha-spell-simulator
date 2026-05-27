@@ -7,7 +7,7 @@
   },
   "prompt": {
     "id": "deep",
-    "sha256": "f73aa3b47c67a7812a8567b3290cd59d074d4bd157a9c8bca020717097b8dc87"
+    "sha256": "5af972b9dc64524ece1ebd7724abd3448c6821d7e988edf5cf304ef6cb6ebe49"
   },
   "model": {
     "id": "Llama-4-Maverick-17B-128E-Instruct"

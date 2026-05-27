@@ -15,6 +15,31 @@ import { WHA_DSL_SCHEMA, GLYPH_IDS } from "./dsl.js";
 
 const GLYPH_SET = GLYPH_IDS.join(", ");
 
+// Exact field schema for every primitive. The judge must emit these field
+// names verbatim — `cx`/`cy`/`r`, not `center`/`radius`; `a1`/`a2`/`length`
+// (polar, ring-relative angles in degrees), not Cartesian endpoints.
+const PRIMITIVE_FIELDS_BLOCK = [
+  "PRIMITIVE FIELDS — use these exact field names (no aliases):",
+  '  - Ring:     { "type":"Ring",     "cx":num, "cy":num, "r":num, "completeness"?:0..1, "parent"?:int|null }',
+  '  - Line:     { "type":"Line",     "a1":num, "a2":num, "length":num, "parent"?:int|null }',
+  '              (a1, a2 are angles in DEGREES on the outer ring; length is total inked length)',
+  '  - Arc:      { "type":"Arc",      "cx":num, "cy":num, "r":num, "startAngle":num, "endAngle":num, "parent"?:int|null }',
+  '  - Dot:      { "type":"Dot",      "cx":num, "cy":num, "r"?:num, "parent"?:int|null }',
+  '  - Symmetry: { "type":"Symmetry", "n":int>=2, "centerX":num, "centerY":num, "parent"?:int|null }',
+  '  Use `parent` (singular integer index into primitives[], or omit). Do NOT emit `parents` (plural).'
+].join("\n");
+
+// Hard reminder: glyphIds are ELEMENTS (the inner sigil), not signs.
+// Signs (Convergence/Direction/Levitation/Column/...) are MODIFIERS and
+// must NEVER appear as a glyphId guess — they belong inside primitives as
+// their constituent Line/Arc shapes.
+const GLYPH_VOCAB_BLOCK = [
+  `GLYPH ID — \`guess.glyphId\` and \`alternatives[].glyphId\` MUST be one of {${GLYPH_SET}}.`,
+  "  These are ELEMENTS (the central sigil). Signs like Column / Levitation / Convergence /",
+  "  Dispersion / Direction / Window / Diamond / Repetition are MODIFIERS — describe them",
+  "  inside `primitives` as their Line/Arc shapes; never put a sign name in `glyphId`."
+].join("\n");
+
 export const FAST_SYSTEM_PROMPT = [
   "You are the Witch Hat Atelier glyph judge (fast leg).",
   "",
@@ -23,6 +48,10 @@ export const FAST_SYSTEM_PROMPT = [
   "  - primitives: list of Ring | Line | Arc | Dot | Symmetry",
   "  - guess: { glyphId, confidence } using ONLY the closed set above",
   "  - critique: { score: 1..5 } (one-number rubric, no sub-scores in fast mode)",
+  "",
+  PRIMITIVE_FIELDS_BLOCK,
+  "",
+  GLYPH_VOCAB_BLOCK,
   "",
   "No prose, no markdown fences, no extra keys. JSON only."
 ].join("\n");
@@ -37,6 +66,10 @@ export const DEEP_SYSTEM_PROMPT = [
   "  - alternatives: up to 2 also-rans { glyphId, confidence }",
   "  - critique: { closure, cleanliness, continuity, length, recognizability, score } each in 1..5",
   "  - hint: optional one-sentence corrective tip in plain text",
+  "",
+  PRIMITIVE_FIELDS_BLOCK,
+  "",
+  GLYPH_VOCAB_BLOCK,
   "",
   "Scoring rubric (each axis 1..5). In your `critique`, score cleanliness AND",
   "length explicitly (1..5) and report your reasoning briefly in `hint`:",

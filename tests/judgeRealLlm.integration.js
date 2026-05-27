@@ -139,10 +139,14 @@ if (skip) {
       const parsed = safeParseJson(text);
       assert.ok(parsed, `model did not return parseable JSON: ${text.slice(0, 200)}`);
       const validated = validateDsl(parsed);
-      assert.ok(
-        validated.ok,
-        `real judge response failed strict WHA-DSL validation: ${JSON.stringify(validated.errors).slice(0, 400)}`
-      );
+      if (!validated.ok) {
+        throw new assert.AssertionError({
+          message: `real judge response failed strict WHA-DSL validation: ${JSON.stringify(validated.errors ?? []).slice(0, 400)}`,
+          actual: validated,
+          expected: { ok: true },
+          operator: "validateDsl"
+        });
+      }
     });
   }
 }
