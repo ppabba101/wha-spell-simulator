@@ -1,5 +1,7 @@
 # Witch Hat Atelier Spell Simulator
 
+[![CI](https://github.com/ytnrvdf/wha-spell-simulator/actions/workflows/ci.yml/badge.svg)](https://github.com/ytnrvdf/wha-spell-simulator/actions/workflows/ci.yml)
+
 A fan-made browser-based spell drawing simulator inspired by *[Witch Hat Atelier](https://en.wikipedia.org/wiki/Witch_Hat_Atelier)*.
 
 <div align="center">
@@ -75,6 +77,33 @@ Run the Node test suite:
 
 ```sh
 npm test
+```
+
+### Test invocation table
+
+| Command                          | Scope                                                               |
+|----------------------------------|---------------------------------------------------------------------|
+| `npm test`                       | Fast unit tests (`tests/**/*.test.js`).                             |
+| `npm run test:integration`       | Miniflare worker + observability integration (`*.integration.js`).  |
+| `npm run bench:recognize`        | M0 recognition AC-P1 gate against the 30 % test split.              |
+| `npm run test:e2e`               | Playwright headless end-to-end suite.                               |
+| `npm run test:integration:llm`   | Real-LLM judge E2E. Requires `SAMBANOVA_KEY` in `worker/wha-llm-proxy/.dev.vars`. |
+| `npm run test:all`               | Unit + miniflare + bench + e2e. Mirrors CI.                         |
+
+### Recognition benchmark
+
+`npm run bench:recognize` reads `tests/fixtures/glyphs/INDEX.json`, runs the
+test split through the production recognition pipeline, prints a confusion
+matrix + per-class precision/recall, and writes a machine-readable report to
+`bench/recognize-report.json`. The bench exits non-zero when accuracy drops
+below the documented regression baseline (see
+[tests/fixtures/glyphs/INDEX.json `degradation_notice`](tests/fixtures/glyphs/INDEX.json)
+for why the baseline is not the 0.90 spec target on the current procedural
+corpus). To enforce the aspirational target once a human-drawn corpus exists,
+run:
+
+```sh
+WHA_BENCH_THRESHOLD=0.9 npm run bench:recognize
 ```
 
 ## Documentation

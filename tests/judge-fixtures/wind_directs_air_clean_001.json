@@ -1,0 +1,33 @@
+{
+  "id": "wind_directs_air_clean_001",
+  "element": "wind",
+  "image": {
+    "path": "tests/fixtures/glyphs/clean/wind_directs_air_clean_001.png",
+    "sha256": "d1ac460aa57b0046365cbab7609f4ac9291ee7cb24ebd4148a0c3aa1e3205537"
+  },
+  "prompt": {
+    "id": "deep",
+    "sha256": "f73aa3b47c67a7812a8567b3290cd59d074d4bd157a9c8bca020717097b8dc87"
+  },
+  "model": {
+    "id": "Llama-4-Maverick-17B-128E-Instruct"
+  },
+  "expected": {
+    "primitives": [
+      { "type": "Ring", "cx": 256, "cy": 192, "r": 128, "completeness": 1 },
+      { "type": "Arc", "cx": 256, "cy": 192, "r": 64, "startAngle": 0, "endAngle": 180 },
+      { "type": "Line", "a1": 45, "a2": 225, "length": 192 },
+      { "type": "Line", "a1": 135, "a2": 315, "length": 192 }
+    ],
+    "guess": { "glyphId": "wind", "confidence": 0.93 },
+    "alternatives": [{ "glyphId": "water", "confidence": 0.04 }],
+    "critique": {
+      "closure": 5,
+      "cleanliness": 4,
+      "continuity": 5,
+      "recognizability": 5,
+      "score": 5
+    },
+    "hint": "Closed ring with central arc plus two crossing diagonals — wind-directs-air glyph."
+  }
+}

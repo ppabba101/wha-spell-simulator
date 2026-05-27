@@ -1,0 +1,33 @@
+{
+  "id": "fire_clean_001",
+  "element": "fire",
+  "image": {
+    "path": "tests/fixtures/glyphs/clean/fire_clean_001.png",
+    "sha256": "779914f65348f70a8c0516c1b43d450b2cdd38a8ac75a0a968fd0fc0f021eef9"
+  },
+  "prompt": {
+    "id": "deep",
+    "sha256": "f73aa3b47c67a7812a8567b3290cd59d074d4bd157a9c8bca020717097b8dc87"
+  },
+  "model": {
+    "id": "Llama-4-Maverick-17B-128E-Instruct"
+  },
+  "expected": {
+    "primitives": [
+      { "type": "Ring", "cx": 256, "cy": 192, "r": 128, "completeness": 1 },
+      { "type": "Line", "a1": 0, "a2": 180, "length": 256 },
+      { "type": "Line", "a1": 90, "a2": 270, "length": 192 },
+      { "type": "Line", "a1": 135, "a2": 315, "length": 192 }
+    ],
+    "guess": { "glyphId": "fire", "confidence": 0.95 },
+    "alternatives": [{ "glyphId": "light", "confidence": 0.05 }],
+    "critique": {
+      "closure": 5,
+      "cleanliness": 5,
+      "continuity": 5,
+      "recognizability": 5,
+      "score": 5
+    },
+    "hint": "Crisp ring closure; three rays meet near the centre — textbook fire seal."
+  }
+}

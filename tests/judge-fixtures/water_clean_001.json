@@ -1,0 +1,31 @@
+{
+  "id": "water_clean_001",
+  "element": "water",
+  "image": {
+    "path": "tests/fixtures/glyphs/clean/water_clean_001.png",
+    "sha256": "af8ec391bec79c06405268b06c4d822096458721805946c7b335efcc24f60efe"
+  },
+  "prompt": {
+    "id": "deep",
+    "sha256": "f73aa3b47c67a7812a8567b3290cd59d074d4bd157a9c8bca020717097b8dc87"
+  },
+  "model": {
+    "id": "Llama-4-Maverick-17B-128E-Instruct"
+  },
+  "expected": {
+    "primitives": [
+      { "type": "Ring", "cx": 256, "cy": 192, "r": 128, "completeness": 1 },
+      { "type": "Line", "a1": 270, "a2": 90, "length": 256 }
+    ],
+    "guess": { "glyphId": "water", "confidence": 0.94 },
+    "alternatives": [{ "glyphId": "none", "confidence": 0.06 }],
+    "critique": {
+      "closure": 5,
+      "cleanliness": 5,
+      "continuity": 5,
+      "recognizability": 5,
+      "score": 5
+    },
+    "hint": "Single vertical bisector inside a closed ring — canonical water seal."
+  }
+}

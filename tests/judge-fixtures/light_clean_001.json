@@ -1,0 +1,34 @@
+{
+  "id": "light_clean_001",
+  "element": "light",
+  "image": {
+    "path": "tests/fixtures/glyphs/clean/light_clean_001.png",
+    "sha256": "06f2e1364504acb303f8199644b16ec7427aac6d62d9065fc6fea5ac38a79c4e"
+  },
+  "prompt": {
+    "id": "deep",
+    "sha256": "f73aa3b47c67a7812a8567b3290cd59d074d4bd157a9c8bca020717097b8dc87"
+  },
+  "model": {
+    "id": "Llama-4-Maverick-17B-128E-Instruct"
+  },
+  "expected": {
+    "primitives": [
+      { "type": "Ring", "cx": 256, "cy": 192, "r": 128, "completeness": 1 },
+      { "type": "Line", "a1": 0, "a2": 180, "length": 256 },
+      { "type": "Line", "a1": 45, "a2": 225, "length": 256 },
+      { "type": "Line", "a1": 90, "a2": 270, "length": 256 },
+      { "type": "Line", "a1": 135, "a2": 315, "length": 256 }
+    ],
+    "guess": { "glyphId": "light", "confidence": 0.95 },
+    "alternatives": [{ "glyphId": "fire", "confidence": 0.04 }],
+    "critique": {
+      "closure": 5,
+      "cleanliness": 5,
+      "continuity": 5,
+      "recognizability": 5,
+      "score": 5
+    },
+    "hint": "Closed ring with eight radial rays — canonical light seal (4 diameters)."
+  }
+}
