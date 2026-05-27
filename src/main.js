@@ -18,6 +18,17 @@ import { createJudgePanel } from "./ui/judgePanel.js";
 import { createJudgeHintBubbles } from "./ui/judgeHintBubbles.js";
 import { createSettingsPanel, readSettings } from "./ui/settingsPanel.js";
 import { createGlowOnClosure } from "./renderer/effects/glowOnClosure.js";
+import {
+  initPaperTexture,
+  setPaperTextureEnabled
+} from "./renderer/effectsPixi/paperTexture.js";
+import {
+  setBloomEnabled,
+  setBloomQuality,
+  getBloomFilter
+} from "./renderer/effectsPixi/bloomPass.js";
+import { preloadStage } from "./renderer/effectsPixi/stage.js";
+import { compositeElementEffect } from "./renderer/effectsPixi/compositor.js";
 
 // M2 judge enablement flag — opt-in via localStorage / settings panel. The
 // streaming judge orchestrator is wired in main; the settings panel keeps the
@@ -53,6 +64,12 @@ let judgeOrchestrator = null;
 // transitions from prepared/invalid to active).
 let glowOnClosure = null;
 let wasActive = false;
+
+// M7b — PixiJS effect stage handles. The stage is lazy-loaded on the first
+// pointerdown (Architect T6 — relocated trigger). Until then `pixi.js` is NOT
+// in the entry chunk's import graph; the structural test in
+// `tests/effectsPixi/stage.test.js` asserts this against the Vite build.
+let pixiStagePreloaded = false;
 
 function setupCanvasSizing() {
   resizeObserver = setupResponsiveCanvasSizing({
@@ -143,6 +160,35 @@ function animationFrame(timestamp) {
   if (glowOnClosure?.isPlaying()) {
     glowOnClosure.renderFrame();
   }
+
+  // M7b — PixiJS compositor. The compositor is itself lazy; it returns
+  // immediately if the stage hasn't been preloaded yet. When the active
+  // spell has a known element + ring, we layer the per-element shader on
+  // top of the Canvas-2D effect. GLSL-failed elements fall back to a
+  // flat-tinted Canvas-2D disc drawn into `#effectPixiCanvas`.
+  if (
+    spellIR?.active &&
+    spellIR.valid &&
+    !spellIR.prepared &&
+    pipeline?.ring?.found &&
+    typeof spellIR.element === "string"
+  ) {
+    const pixiCanvas = elements.effectPixiCanvas ?? null;
+    const fallbackCtx = pixiCanvas?.getContext?.("2d") ?? null;
+    // Best-effort: never let a compositor error tear down the main loop.
+    try {
+      compositeElementEffect({
+        element: spellIR.element,
+        ring: pipeline.ring,
+        timestamp,
+        fallbackCtx,
+        intensity: 1
+      });
+    } catch (err) {
+      // Logged once; subsequent frames silently skip Pixi.
+      console.warn("[effectsPixi] composite error:", err?.message ?? err);
+    }
+  }
   requestAnimationFrame(animationFrame);
 }
 
@@ -196,6 +242,22 @@ function setupJudgeSurfaces() {
       if (!next) return;
       if (judgeOverlay) judgeOverlay.setEnabled(!!next.surfaces.canvasOverlay);
       if (judgeHintBubbles) judgeHintBubbles.setEnabled(!!next.surfaces.hintBubbles);
+
+      // M7b — Graphics hot-swap. Each toggle mutates the corresponding Pixi
+      // filter / emitter without re-mounting the stage. The PixiJS app
+      // renderer identity is preserved (Critic iter-3 Open Q#4) — the
+      // Playwright test asserts `__pixiAppRendererId` is stable across toggles.
+      if (detail.section === "graphics" && detail.patch) {
+        if ("bloom" in detail.patch) {
+          setBloomEnabled(!!detail.patch.bloom);
+        }
+        if ("paperTexture" in detail.patch) {
+          setPaperTextureEnabled(!!detail.patch.paperTexture);
+        }
+        if ("particleQuality" in detail.patch) {
+          setBloomQuality(detail.patch.particleQuality);
+        }
+      }
       // Hot-swap the judge orchestrator on enable/disable.
       if (detail.section === "judge" && detail.patch && "enabled" in detail.patch) {
         if (detail.patch.enabled) {
@@ -349,10 +411,67 @@ async function init() {
   // so the silver flash + sparks composite *above* the spell effect canvas
   // pass while staying below any future M7b Pixi overlay.
   glowOnClosure = createGlowOnClosure({ canvas: elements.effectCanvas });
+
+  // M7b — Paper texture substrate. Pure Canvas-2D; initialises immediately
+  // so the parchment drift is visible from first paint. Gated by the
+  // graphics.paperTexture setting (default ON).
+  if (elements.paperCanvas) {
+    initPaperTexture(elements.paperCanvas);
+    const initial = readSettings();
+    setPaperTextureEnabled(initial.graphics?.paperTexture !== false);
+  }
+
+  // M7b — Lazy-load the PixiJS effect stage on the FIRST pointerdown.
+  // Architect T6 relocated this trigger from "first ring closure" so the
+  // closure flash itself doesn't pay the cold-cache cost.
+  if (elements.glyphCanvas) {
+    const onFirstPointerDown = () => {
+      if (pixiStagePreloaded) return;
+      pixiStagePreloaded = true;
+      try {
+        preloadStage().then(() => {
+          // Wire bloom once the stage is up.
+          const initial = readSettings();
+          if (initial.graphics?.bloom !== false) {
+            getBloomFilter().then((f) => {
+              if (f) {
+                setBloomEnabled(true);
+                setBloomQuality(initial.graphics?.particleQuality ?? "high");
+              }
+            });
+          }
+        });
+      } catch (err) {
+        console.warn("[effectsPixi] preload failed:", err?.message ?? err);
+      }
+    };
+    elements.glyphCanvas.addEventListener("pointerdown", onFirstPointerDown, { once: true });
+  }
   // Expose for headless tests so Playwright can poll the controller state.
   try {
     if (typeof window !== "undefined") {
       window.__glowOnClosure = glowOnClosure;
+      // M7b — expose Pixi handles for Playwright. The stage is lazy; this
+      // accessor resolves to the live PIXI.Application once preloaded so
+      // tests can assert renderer identity across hot-swaps.
+      window.__effectsPixi = {
+        getApp: async () => {
+          const mod = await import("./renderer/effectsPixi/stage.js");
+          try {
+            return await mod.getStage();
+          } catch {
+            return null;
+          }
+        },
+        getFailedElements: async () => {
+          const mod = await import("./renderer/effectsPixi/stage.js");
+          return Array.from(mod.getFailedElements());
+        },
+        markFailed: async (element) => {
+          const mod = await import("./renderer/effectsPixi/stage.js");
+          mod.__markElementFailed(element);
+        }
+      };
     }
   } catch {
     // ignore

@@ -648,6 +648,32 @@ body:not(.sigil-maker-page) .app-shell {
   mix-blend-mode: normal;
 }
 
+/* M7b — paper texture substrate. Sits BELOW the glyph canvas so the slow
+ * fbm-noise drift feels like aged parchment under the ink. */
+#paperCanvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* M7b — PixiJS effect stage. Sits between #effectCanvas (z-index 2) and
+ * #judgeOverlayCanvas (z-index 3) so the shader bloom layers ON TOP of the
+ * Canvas-2D effects while staying below the judge overlay. */
+#effectPixiCanvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
 /* M3 — Judge overlay canvas. Sits above #effectCanvas; never receives pointer
  * events; uses `screen` blend mode so the silver glow composites over both
  * ink and effect layers without occluding them. */

@@ -20,8 +20,10 @@
     "worker:deploy": "wrangler deploy"
   },
   "dependencies": {
+    "@pixi/filter-advanced-bloom": "^5.1.1",
     "ajv": "^8.17.1",
-    "perfect-freehand": "^1.2.3"
+    "perfect-freehand": "^1.2.3",
+    "pixi.js": "^8.18.1"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250101.0",

@@ -2,6 +2,8 @@ export function getElements() {
   return {
     glyphCanvas: document.querySelector("#glyphCanvas"),
     effectCanvas: document.querySelector("#effectCanvas"),
+    paperCanvas: document.querySelector("#paperCanvas"),
+    effectPixiCanvas: document.querySelector("#effectPixiCanvas"),
     judgeOverlayCanvas: document.querySelector("#judgeOverlayCanvas"),
     canvasShell: document.querySelector(".canvas-shell"),
     canvasHint: document.querySelector("#canvasHint"),
