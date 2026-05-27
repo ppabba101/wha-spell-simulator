@@ -1,0 +1,1121 @@
+{
+  "version": 1,
+  "strokeFormat": "raw-points-v1",
+  "degradation_notice": "Procedurally generated — no human drawers were available. Simulates 3 personas via parametric stroke generation with seeded PRNG noise. Suitable for regression testing and template-matcher smoke tests but NOT for user-fidelity benchmarking. Replace with real human-drawn fixtures before AC-P1 final measurement.",
+  "drawers": [
+    {
+      "id": 1,
+      "persona": "steady-hand-expert",
+      "noise_amplitude": 0.5,
+      "speed_variance": 0.1
+    },
+    {
+      "id": 2,
+      "persona": "average-user",
+      "noise_amplitude": 2,
+      "speed_variance": 0.4
+    },
+    {
+      "id": 3,
+      "persona": "shaky-hand-beginner",
+      "noise_amplitude": 6,
+      "speed_variance": 0.9
+    }
+  ],
+  "fixtures": [
+    {
+      "path": "clean/fire_clean_001.png",
+      "strokes_path": "clean/fire_clean_001.strokes.json",
+      "drawer_id": 1,
+      "quality": "clean",
+      "ground_truth": {
+        "glyph": "fire",
+        "primitives": [
+          "Ring",
+          "Line",
+          "Line",
+          "Line"
+        ],
+        "signs": []
+      },
+      "split": "test",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "clean/fire_clean_002.png",
+      "strokes_path": "clean/fire_clean_002.strokes.json",
+      "drawer_id": 1,
+      "quality": "clean",
+      "ground_truth": {
+        "glyph": "fire",
+        "primitives": [
+          "Ring",
+          "Line",
+          "Line",
+          "Line"
+        ],
+        "signs": []
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "average/fire_average_001.png",
+      "strokes_path": "average/fire_average_001.strokes.json",
+      "drawer_id": 2,
+      "quality": "average",
+      "ground_truth": {
+        "glyph": "fire",
+        "primitives": [
+          "Ring",
+          "Line",
+          "Line",
+          "Line"
+        ],
+        "signs": []
+      },
+      "split": "test",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "average/fire_average_002.png",
+      "strokes_path": "average/fire_average_002.strokes.json",
+      "drawer_id": 2,
+      "quality": "average",
+      "ground_truth": {
+        "glyph": "fire",
+        "primitives": [
+          "Ring",
+          "Line",
+          "Line",
+          "Line"
+        ],
+        "signs": []
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "messy/fire_messy_001.png",
+      "strokes_path": "messy/fire_messy_001.strokes.json",
+      "drawer_id": 3,
+      "quality": "messy",
+      "ground_truth": {
+        "glyph": "fire",
+        "primitives": [
+          "Ring",
+          "Line",
+          "Line",
+          "Line"
+        ],
+        "signs": []
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "messy/fire_messy_002.png",
+      "strokes_path": "messy/fire_messy_002.strokes.json",
+      "drawer_id": 3,
+      "quality": "messy",
+      "ground_truth": {
+        "glyph": "fire",
+        "primitives": [
+          "Ring",
+          "Line",
+          "Line",
+          "Line"
+        ],
+        "signs": []
+      },
+      "split": "test",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "clean/water_clean_001.png",
+      "strokes_path": "clean/water_clean_001.strokes.json",
+      "drawer_id": 1,
+      "quality": "clean",
+      "ground_truth": {
+        "glyph": "water",
+        "primitives": [
+          "Ring",
+          "Line"
+        ],
+        "signs": []
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "clean/water_clean_002.png",
+      "strokes_path": "clean/water_clean_002.strokes.json",
+      "drawer_id": 1,
+      "quality": "clean",
+      "ground_truth": {
+        "glyph": "water",
+        "primitives": [
+          "Ring",
+          "Line"
+        ],
+        "signs": []
+      },
+      "split": "test",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "average/water_average_001.png",
+      "strokes_path": "average/water_average_001.strokes.json",
+      "drawer_id": 2,
+      "quality": "average",
+      "ground_truth": {
+        "glyph": "water",
+        "primitives": [
+          "Ring",
+          "Line"
+        ],
+        "signs": []
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "average/water_average_002.png",
+      "strokes_path": "average/water_average_002.strokes.json",
+      "drawer_id": 2,
+      "quality": "average",
+      "ground_truth": {
+        "glyph": "water",
+        "primitives": [
+          "Ring",
+          "Line"
+        ],
+        "signs": []
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "messy/water_messy_001.png",
+      "strokes_path": "messy/water_messy_001.strokes.json",
+      "drawer_id": 3,
+      "quality": "messy",
+      "ground_truth": {
+        "glyph": "water",
+        "primitives": [
+          "Ring",
+          "Line"
+        ],
+        "signs": []
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "messy/water_messy_002.png",
+      "strokes_path": "messy/water_messy_002.strokes.json",
+      "drawer_id": 3,
+      "quality": "messy",
+      "ground_truth": {
+        "glyph": "water",
+        "primitives": [
+          "Ring",
+          "Line"
+        ],
+        "signs": []
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "clean/wind_directs_air_clean_001.png",
+      "strokes_path": "clean/wind_directs_air_clean_001.strokes.json",
+      "drawer_id": 1,
+      "quality": "clean",
+      "ground_truth": {
+        "glyph": "wind-directs-air",
+        "primitives": [
+          "Ring",
+          "Arc",
+          "Line",
+          "Line"
+        ],
+        "signs": []
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "clean/wind_directs_air_clean_002.png",
+      "strokes_path": "clean/wind_directs_air_clean_002.strokes.json",
+      "drawer_id": 1,
+      "quality": "clean",
+      "ground_truth": {
+        "glyph": "wind-directs-air",
+        "primitives": [
+          "Ring",
+          "Arc",
+          "Line",
+          "Line"
+        ],
+        "signs": []
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "average/wind_directs_air_average_001.png",
+      "strokes_path": "average/wind_directs_air_average_001.strokes.json",
+      "drawer_id": 2,
+      "quality": "average",
+      "ground_truth": {
+        "glyph": "wind-directs-air",
+        "primitives": [
+          "Ring",
+          "Arc",
+          "Line",
+          "Line"
+        ],
+        "signs": []
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "average/wind_directs_air_average_002.png",
+      "strokes_path": "average/wind_directs_air_average_002.strokes.json",
+      "drawer_id": 2,
+      "quality": "average",
+      "ground_truth": {
+        "glyph": "wind-directs-air",
+        "primitives": [
+          "Ring",
+          "Arc",
+          "Line",
+          "Line"
+        ],
+        "signs": []
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "messy/wind_directs_air_messy_001.png",
+      "strokes_path": "messy/wind_directs_air_messy_001.strokes.json",
+      "drawer_id": 3,
+      "quality": "messy",
+      "ground_truth": {
+        "glyph": "wind-directs-air",
+        "primitives": [
+          "Ring",
+          "Arc",
+          "Line",
+          "Line"
+        ],
+        "signs": []
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "messy/wind_directs_air_messy_002.png",
+      "strokes_path": "messy/wind_directs_air_messy_002.strokes.json",
+      "drawer_id": 3,
+      "quality": "messy",
+      "ground_truth": {
+        "glyph": "wind-directs-air",
+        "primitives": [
+          "Ring",
+          "Arc",
+          "Line",
+          "Line"
+        ],
+        "signs": []
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "clean/earth_clean_001.png",
+      "strokes_path": "clean/earth_clean_001.strokes.json",
+      "drawer_id": 1,
+      "quality": "clean",
+      "ground_truth": {
+        "glyph": "earth",
+        "primitives": [
+          "Ring",
+          "Line",
+          "Line"
+        ],
+        "signs": []
+      },
+      "split": "test",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "clean/earth_clean_002.png",
+      "strokes_path": "clean/earth_clean_002.strokes.json",
+      "drawer_id": 1,
+      "quality": "clean",
+      "ground_truth": {
+        "glyph": "earth",
+        "primitives": [
+          "Ring",
+          "Line",
+          "Line"
+        ],
+        "signs": []
+      },
+      "split": "test",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "average/earth_average_001.png",
+      "strokes_path": "average/earth_average_001.strokes.json",
+      "drawer_id": 2,
+      "quality": "average",
+      "ground_truth": {
+        "glyph": "earth",
+        "primitives": [
+          "Ring",
+          "Line",
+          "Line"
+        ],
+        "signs": []
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "average/earth_average_002.png",
+      "strokes_path": "average/earth_average_002.strokes.json",
+      "drawer_id": 2,
+      "quality": "average",
+      "ground_truth": {
+        "glyph": "earth",
+        "primitives": [
+          "Ring",
+          "Line",
+          "Line"
+        ],
+        "signs": []
+      },
+      "split": "test",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "messy/earth_messy_001.png",
+      "strokes_path": "messy/earth_messy_001.strokes.json",
+      "drawer_id": 3,
+      "quality": "messy",
+      "ground_truth": {
+        "glyph": "earth",
+        "primitives": [
+          "Ring",
+          "Line",
+          "Line"
+        ],
+        "signs": []
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "messy/earth_messy_002.png",
+      "strokes_path": "messy/earth_messy_002.strokes.json",
+      "drawer_id": 3,
+      "quality": "messy",
+      "ground_truth": {
+        "glyph": "earth",
+        "primitives": [
+          "Ring",
+          "Line",
+          "Line"
+        ],
+        "signs": []
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "clean/light_clean_001.png",
+      "strokes_path": "clean/light_clean_001.strokes.json",
+      "drawer_id": 1,
+      "quality": "clean",
+      "ground_truth": {
+        "glyph": "light",
+        "primitives": [
+          "Ring",
+          "Line",
+          "Line",
+          "Line",
+          "Line",
+          "Line",
+          "Line",
+          "Line",
+          "Line"
+        ],
+        "signs": []
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "clean/light_clean_002.png",
+      "strokes_path": "clean/light_clean_002.strokes.json",
+      "drawer_id": 1,
+      "quality": "clean",
+      "ground_truth": {
+        "glyph": "light",
+        "primitives": [
+          "Ring",
+          "Line",
+          "Line",
+          "Line",
+          "Line",
+          "Line",
+          "Line",
+          "Line",
+          "Line"
+        ],
+        "signs": []
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "average/light_average_001.png",
+      "strokes_path": "average/light_average_001.strokes.json",
+      "drawer_id": 2,
+      "quality": "average",
+      "ground_truth": {
+        "glyph": "light",
+        "primitives": [
+          "Ring",
+          "Line",
+          "Line",
+          "Line",
+          "Line",
+          "Line",
+          "Line",
+          "Line",
+          "Line"
+        ],
+        "signs": []
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "average/light_average_002.png",
+      "strokes_path": "average/light_average_002.strokes.json",
+      "drawer_id": 2,
+      "quality": "average",
+      "ground_truth": {
+        "glyph": "light",
+        "primitives": [
+          "Ring",
+          "Line",
+          "Line",
+          "Line",
+          "Line",
+          "Line",
+          "Line",
+          "Line",
+          "Line"
+        ],
+        "signs": []
+      },
+      "split": "test",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "messy/light_messy_001.png",
+      "strokes_path": "messy/light_messy_001.strokes.json",
+      "drawer_id": 3,
+      "quality": "messy",
+      "ground_truth": {
+        "glyph": "light",
+        "primitives": [
+          "Ring",
+          "Line",
+          "Line",
+          "Line",
+          "Line",
+          "Line",
+          "Line",
+          "Line",
+          "Line"
+        ],
+        "signs": []
+      },
+      "split": "test",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "messy/light_messy_002.png",
+      "strokes_path": "messy/light_messy_002.strokes.json",
+      "drawer_id": 3,
+      "quality": "messy",
+      "ground_truth": {
+        "glyph": "light",
+        "primitives": [
+          "Ring",
+          "Line",
+          "Line",
+          "Line",
+          "Line",
+          "Line",
+          "Line",
+          "Line",
+          "Line"
+        ],
+        "signs": []
+      },
+      "split": "test",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "signs/column_clean_001.png",
+      "strokes_path": "signs/column_clean_001.strokes.json",
+      "drawer_id": 1,
+      "quality": "clean",
+      "ground_truth": {
+        "glyph": null,
+        "primitives": [],
+        "signs": [
+          "column"
+        ]
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "signs/column_clean_002.png",
+      "strokes_path": "signs/column_clean_002.strokes.json",
+      "drawer_id": 1,
+      "quality": "clean",
+      "ground_truth": {
+        "glyph": null,
+        "primitives": [],
+        "signs": [
+          "column"
+        ]
+      },
+      "split": "test",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "signs/column_messy_001.png",
+      "strokes_path": "signs/column_messy_001.strokes.json",
+      "drawer_id": 3,
+      "quality": "messy",
+      "ground_truth": {
+        "glyph": null,
+        "primitives": [],
+        "signs": [
+          "column"
+        ]
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "signs/column_messy_002.png",
+      "strokes_path": "signs/column_messy_002.strokes.json",
+      "drawer_id": 3,
+      "quality": "messy",
+      "ground_truth": {
+        "glyph": null,
+        "primitives": [],
+        "signs": [
+          "column"
+        ]
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "signs/levitation_clean_001.png",
+      "strokes_path": "signs/levitation_clean_001.strokes.json",
+      "drawer_id": 1,
+      "quality": "clean",
+      "ground_truth": {
+        "glyph": null,
+        "primitives": [],
+        "signs": [
+          "levitation"
+        ]
+      },
+      "split": "test",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "signs/levitation_clean_002.png",
+      "strokes_path": "signs/levitation_clean_002.strokes.json",
+      "drawer_id": 1,
+      "quality": "clean",
+      "ground_truth": {
+        "glyph": null,
+        "primitives": [],
+        "signs": [
+          "levitation"
+        ]
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "signs/levitation_messy_001.png",
+      "strokes_path": "signs/levitation_messy_001.strokes.json",
+      "drawer_id": 3,
+      "quality": "messy",
+      "ground_truth": {
+        "glyph": null,
+        "primitives": [],
+        "signs": [
+          "levitation"
+        ]
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "signs/levitation_messy_002.png",
+      "strokes_path": "signs/levitation_messy_002.strokes.json",
+      "drawer_id": 3,
+      "quality": "messy",
+      "ground_truth": {
+        "glyph": null,
+        "primitives": [],
+        "signs": [
+          "levitation"
+        ]
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "signs/convergence_clean_001.png",
+      "strokes_path": "signs/convergence_clean_001.strokes.json",
+      "drawer_id": 1,
+      "quality": "clean",
+      "ground_truth": {
+        "glyph": null,
+        "primitives": [],
+        "signs": [
+          "convergence"
+        ]
+      },
+      "split": "test",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "signs/convergence_clean_002.png",
+      "strokes_path": "signs/convergence_clean_002.strokes.json",
+      "drawer_id": 1,
+      "quality": "clean",
+      "ground_truth": {
+        "glyph": null,
+        "primitives": [],
+        "signs": [
+          "convergence"
+        ]
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "signs/convergence_messy_001.png",
+      "strokes_path": "signs/convergence_messy_001.strokes.json",
+      "drawer_id": 3,
+      "quality": "messy",
+      "ground_truth": {
+        "glyph": null,
+        "primitives": [],
+        "signs": [
+          "convergence"
+        ]
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "signs/convergence_messy_002.png",
+      "strokes_path": "signs/convergence_messy_002.strokes.json",
+      "drawer_id": 3,
+      "quality": "messy",
+      "ground_truth": {
+        "glyph": null,
+        "primitives": [],
+        "signs": [
+          "convergence"
+        ]
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "signs/dispersion_clean_001.png",
+      "strokes_path": "signs/dispersion_clean_001.strokes.json",
+      "drawer_id": 1,
+      "quality": "clean",
+      "ground_truth": {
+        "glyph": null,
+        "primitives": [],
+        "signs": [
+          "dispersion"
+        ]
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "signs/dispersion_clean_002.png",
+      "strokes_path": "signs/dispersion_clean_002.strokes.json",
+      "drawer_id": 1,
+      "quality": "clean",
+      "ground_truth": {
+        "glyph": null,
+        "primitives": [],
+        "signs": [
+          "dispersion"
+        ]
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "signs/dispersion_messy_001.png",
+      "strokes_path": "signs/dispersion_messy_001.strokes.json",
+      "drawer_id": 3,
+      "quality": "messy",
+      "ground_truth": {
+        "glyph": null,
+        "primitives": [],
+        "signs": [
+          "dispersion"
+        ]
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "signs/dispersion_messy_002.png",
+      "strokes_path": "signs/dispersion_messy_002.strokes.json",
+      "drawer_id": 3,
+      "quality": "messy",
+      "ground_truth": {
+        "glyph": null,
+        "primitives": [],
+        "signs": [
+          "dispersion"
+        ]
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "signs/direction_clean_001.png",
+      "strokes_path": "signs/direction_clean_001.strokes.json",
+      "drawer_id": 1,
+      "quality": "clean",
+      "ground_truth": {
+        "glyph": null,
+        "primitives": [],
+        "signs": [
+          "direction"
+        ]
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "signs/direction_clean_002.png",
+      "strokes_path": "signs/direction_clean_002.strokes.json",
+      "drawer_id": 1,
+      "quality": "clean",
+      "ground_truth": {
+        "glyph": null,
+        "primitives": [],
+        "signs": [
+          "direction"
+        ]
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "signs/direction_messy_001.png",
+      "strokes_path": "signs/direction_messy_001.strokes.json",
+      "drawer_id": 3,
+      "quality": "messy",
+      "ground_truth": {
+        "glyph": null,
+        "primitives": [],
+        "signs": [
+          "direction"
+        ]
+      },
+      "split": "test",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "signs/direction_messy_002.png",
+      "strokes_path": "signs/direction_messy_002.strokes.json",
+      "drawer_id": 3,
+      "quality": "messy",
+      "ground_truth": {
+        "glyph": null,
+        "primitives": [],
+        "signs": [
+          "direction"
+        ]
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "signs/window_clean_001.png",
+      "strokes_path": "signs/window_clean_001.strokes.json",
+      "drawer_id": 1,
+      "quality": "clean",
+      "ground_truth": {
+        "glyph": null,
+        "primitives": [],
+        "signs": [
+          "window"
+        ]
+      },
+      "split": "test",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "signs/window_clean_002.png",
+      "strokes_path": "signs/window_clean_002.strokes.json",
+      "drawer_id": 1,
+      "quality": "clean",
+      "ground_truth": {
+        "glyph": null,
+        "primitives": [],
+        "signs": [
+          "window"
+        ]
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "signs/window_messy_001.png",
+      "strokes_path": "signs/window_messy_001.strokes.json",
+      "drawer_id": 3,
+      "quality": "messy",
+      "ground_truth": {
+        "glyph": null,
+        "primitives": [],
+        "signs": [
+          "window"
+        ]
+      },
+      "split": "test",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "signs/window_messy_002.png",
+      "strokes_path": "signs/window_messy_002.strokes.json",
+      "drawer_id": 3,
+      "quality": "messy",
+      "ground_truth": {
+        "glyph": null,
+        "primitives": [],
+        "signs": [
+          "window"
+        ]
+      },
+      "split": "test",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "signs/diamond_clean_001.png",
+      "strokes_path": "signs/diamond_clean_001.strokes.json",
+      "drawer_id": 1,
+      "quality": "clean",
+      "ground_truth": {
+        "glyph": null,
+        "primitives": [],
+        "signs": [
+          "diamond"
+        ]
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "signs/diamond_clean_002.png",
+      "strokes_path": "signs/diamond_clean_002.strokes.json",
+      "drawer_id": 1,
+      "quality": "clean",
+      "ground_truth": {
+        "glyph": null,
+        "primitives": [],
+        "signs": [
+          "diamond"
+        ]
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "signs/diamond_messy_001.png",
+      "strokes_path": "signs/diamond_messy_001.strokes.json",
+      "drawer_id": 3,
+      "quality": "messy",
+      "ground_truth": {
+        "glyph": null,
+        "primitives": [],
+        "signs": [
+          "diamond"
+        ]
+      },
+      "split": "test",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "signs/diamond_messy_002.png",
+      "strokes_path": "signs/diamond_messy_002.strokes.json",
+      "drawer_id": 3,
+      "quality": "messy",
+      "ground_truth": {
+        "glyph": null,
+        "primitives": [],
+        "signs": [
+          "diamond"
+        ]
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "signs/repetition_clean_001.png",
+      "strokes_path": "signs/repetition_clean_001.strokes.json",
+      "drawer_id": 1,
+      "quality": "clean",
+      "ground_truth": {
+        "glyph": null,
+        "primitives": [],
+        "signs": [
+          "repetition"
+        ]
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "signs/repetition_clean_002.png",
+      "strokes_path": "signs/repetition_clean_002.strokes.json",
+      "drawer_id": 1,
+      "quality": "clean",
+      "ground_truth": {
+        "glyph": null,
+        "primitives": [],
+        "signs": [
+          "repetition"
+        ]
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "signs/repetition_messy_001.png",
+      "strokes_path": "signs/repetition_messy_001.strokes.json",
+      "drawer_id": 3,
+      "quality": "messy",
+      "ground_truth": {
+        "glyph": null,
+        "primitives": [],
+        "signs": [
+          "repetition"
+        ]
+      },
+      "split": "test",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "signs/repetition_messy_002.png",
+      "strokes_path": "signs/repetition_messy_002.strokes.json",
+      "drawer_id": 3,
+      "quality": "messy",
+      "ground_truth": {
+        "glyph": null,
+        "primitives": [],
+        "signs": [
+          "repetition"
+        ]
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "nested/memory-erasure_001.png",
+      "strokes_path": "nested/memory-erasure_001.strokes.json",
+      "drawer_id": 1,
+      "quality": "clean",
+      "ground_truth": {
+        "glyph": "memory-erasure",
+        "primitives": [
+          "Ring",
+          "Ring",
+          "Line",
+          "Arc"
+        ],
+        "signs": []
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "nested/sylph-shoes_001.png",
+      "strokes_path": "nested/sylph-shoes_001.strokes.json",
+      "drawer_id": 1,
+      "quality": "clean",
+      "ground_truth": {
+        "glyph": "sylph-shoes",
+        "primitives": [
+          "Ring",
+          "Ring",
+          "Arc",
+          "Arc",
+          "Arc"
+        ],
+        "signs": [
+          "levitation"
+        ]
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    },
+    {
+      "path": "nested/light-reducing_001.png",
+      "strokes_path": "nested/light-reducing_001.strokes.json",
+      "drawer_id": 1,
+      "quality": "clean",
+      "ground_truth": {
+        "glyph": "light-reducing",
+        "primitives": [
+          "Ring",
+          "Ring",
+          "Ring",
+          "Line",
+          "Line",
+          "Line",
+          "Line",
+          "Line",
+          "Line"
+        ],
+        "signs": []
+      },
+      "split": "train",
+      "strokeFormat": "raw-points-v1"
+    }
+  ]
+}
