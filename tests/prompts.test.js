@@ -19,8 +19,8 @@ test("FAST_SYSTEM_PROMPT references the closed glyph set", () => {
   }
 });
 
-test("DEEP_SYSTEM_PROMPT names all five rubric axes", () => {
-  for (const axis of ["closure", "cleanliness", "continuity", "recognizability", "score"]) {
+test("DEEP_SYSTEM_PROMPT names all six rubric axes", () => {
+  for (const axis of ["closure", "cleanliness", "continuity", "length", "recognizability", "score"]) {
     assert.ok(DEEP_SYSTEM_PROMPT.includes(axis), `DEEP prompt missing axis "${axis}"`);
   }
 });

@@ -8,8 +8,16 @@
       (Cloudflare *.workers.dev) plus the three provider origins so that the
       escape-hatch user-key direct-call path (Anthropic) and the bench/dev
       Worker calls all pass CSP. Image-src allows blob: for canvas snapshots.
+
+      'unsafe-eval' on script-src: Ajv (JSON-Schema validator) and PixiJS
+      WebGLRenderer both compile shaders / validators at runtime via
+      `new Function`. Without 'unsafe-eval' the judge UI never updates
+      (validator throws) and the PixiJS stage refuses to initialise.
+      This is a static fan-project simulator: no auth, no backend, no
+      user-generated scripts. The eval attack surface is the cost of
+      shipping these libraries — the trade-off is intentional.
     -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self' https://*.workers.dev https://api.groq.com https://api.sambanova.ai https://api.anthropic.com">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self' https://*.workers.dev https://api.groq.com https://api.sambanova.ai https://api.anthropic.com">
     <title>Witch Hat Atelier Spell Simulator</title>
     <link rel="icon" href="./assets/favicon.ico">
     <link rel="stylesheet" href="./assets/css/styles.css">
