@@ -9,7 +9,7 @@
       escape-hatch user-key direct-call path (Anthropic) and the bench/dev
       Worker calls all pass CSP. Image-src allows blob: for canvas snapshots.
     -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://*.workers.dev https://api.groq.com https://api.sambanova.ai https://api.anthropic.com">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self' https://*.workers.dev https://api.groq.com https://api.sambanova.ai https://api.anthropic.com">
     <title>Witch Hat Atelier Spell Simulator</title>
     <link rel="icon" href="./assets/favicon.ico">
     <link rel="stylesheet" href="./assets/css/styles.css">
