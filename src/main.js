@@ -17,6 +17,7 @@ import { createJudgeOverlay } from "./ui/judgeOverlay.js";
 import { createJudgePanel } from "./ui/judgePanel.js";
 import { createJudgeHintBubbles } from "./ui/judgeHintBubbles.js";
 import { createSettingsPanel, readSettings } from "./ui/settingsPanel.js";
+import { createGlowOnClosure } from "./renderer/effects/glowOnClosure.js";
 
 // M2 judge enablement flag — opt-in via localStorage / settings panel. The
 // streaming judge orchestrator is wired in main; the settings panel keeps the
@@ -47,6 +48,12 @@ let judgeHintBubbles = null;
 let settingsPanel = null;
 let judgeOrchestrator = null;
 
+// M7a — glow-on-closure controller and the latched "previously-active" flag
+// used to fire the glow exactly once per ring closure (i.e. when the spell
+// transitions from prepared/invalid to active).
+let glowOnClosure = null;
+let wasActive = false;
+
 function setupCanvasSizing() {
   resizeObserver = setupResponsiveCanvasSizing({
     elements,
@@ -73,15 +80,44 @@ function recompute() {
   spellIR = compileSpell({ glyphAST: pipeline.glyphAST, dictionary, config: CONFIG });
   updateSummary({ elements, store, capture, pipeline, spellIR });
   updateDiagnostics({ elements, store, pipeline, spellIR });
+
+  // M7a — dispatch spell:compiled (qualityPanel and other M5 surfaces listen
+  // on window for this event) and trigger the glow-on-closure animation when
+  // the ring just closed (transition from non-active to active).
+  if (typeof window !== "undefined") {
+    try {
+      window.dispatchEvent(new CustomEvent("spell:compiled", { detail: { spellIR } }));
+    } catch {
+      // ignore — best-effort notification
+    }
+  }
+  const nowActive = Boolean(spellIR?.active);
+  if (nowActive && !wasActive && glowOnClosure) {
+    const ring = pipeline?.ring ?? pipeline?.glyphAST?.ring ?? null;
+    if (ring?.found) {
+      // The glow handle is canvas-agnostic; we pass the ring centre + radius
+      // through the trigger options so it works without knowing about pipelines.
+      glowOnClosure.trigger(spellIR, {
+        center: ring.center,
+        radius: ring.radius
+      });
+    }
+  }
+  wasActive = nowActive;
 }
 
 function animationFrame(timestamp) {
+  // M7a — prepared spells (open ring on a valid glyphAST) render at 50%
+  // opacity until the user closes the ring. Active / failed / idle states
+  // render at full opacity.
+  const inkAlphaScale = spellIR?.prepared ? 0.5 : 1;
   renderer.renderGlyph({
     strokes: store.getStrokes(),
     currentStroke: capture.getCurrentStroke(),
     pipeline,
     showGuides: elements.guidesToggle.checked,
-    showDebug: elements.diagnosticsToggle.checked
+    showDebug: elements.diagnosticsToggle.checked,
+    inkAlphaScale
   });
 
   if (spellIR.active) {
@@ -100,6 +136,13 @@ function animationFrame(timestamp) {
     timestamp,
     showGuides: elements.guidesToggle.checked
   });
+
+  // M7a — glow-on-closure composites on top of the effect canvas. The
+  // controller is a no-op until trigger() is called from recompute() on
+  // the prepared→active transition.
+  if (glowOnClosure?.isPlaying()) {
+    glowOnClosure.renderFrame();
+  }
   requestAnimationFrame(animationFrame);
 }
 
@@ -301,6 +344,19 @@ async function init() {
     onPreview: () => {},
     onCommit: recompute
   });
+
+  // M7a — Canvas-2D glow-on-closure handle. We render onto the effect canvas
+  // so the silver flash + sparks composite *above* the spell effect canvas
+  // pass while staying below any future M7b Pixi overlay.
+  glowOnClosure = createGlowOnClosure({ canvas: elements.effectCanvas });
+  // Expose for headless tests so Playwright can poll the controller state.
+  try {
+    if (typeof window !== "undefined") {
+      window.__glowOnClosure = glowOnClosure;
+    }
+  } catch {
+    // ignore
+  }
 
   setupJudgeSurfaces();
 

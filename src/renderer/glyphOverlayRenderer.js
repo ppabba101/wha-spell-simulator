@@ -1,3 +1,93 @@
+import { getStroke } from "perfect-freehand";
+
+// M7a — perfect-freehand renders the ink path as a tessellated polygon.
+// The freehand polygon is a RENDERING ARTIFACT only — it is *never* fed back
+// into the parser. The raw point list (preserved on stroke.points and on
+// fixtures as raw-points-v1 [x, y, t_ms, pressure] tuples) remains the
+// canonical input to the recognition pipeline.
+const FREEHAND_OPTIONS_BASE = {
+  size: 6.2,
+  thinning: 0.55,
+  smoothing: 0.5,
+  streamline: 0.5,
+  easing: (t) => t,
+  last: true
+};
+
+// Convert a stroke's normalised points (x, y, pressure?, t?) into the tuple
+// shape perfect-freehand expects: [x, y, pressure].
+function pointsToFreehandInput(points) {
+  const input = new Array(points.length);
+  for (let i = 0; i < points.length; i += 1) {
+    const p = points[i];
+    const pressure = typeof p.pressure === "number" ? p.pressure : 0.5;
+    input[i] = [p.x, p.y, pressure];
+  }
+  return input;
+}
+
+// Detect whether any point in the stroke carries a real (non-fallback) pressure
+// value. Mouse input is normalised to a constant 0.5 in pointerNormalizer; only
+// stylus input produces a distribution that varies away from that midpoint.
+function hasRealPressure(points) {
+  if (!points || points.length === 0) return false;
+  let nonHalfCount = 0;
+  for (let i = 0; i < points.length; i += 1) {
+    const p = points[i].pressure;
+    if (typeof p === "number" && Math.abs(p - 0.5) > 0.01 && p > 0) {
+      nonHalfCount += 1;
+    }
+  }
+  // Two or more samples away from 0.5 means the input device reported real
+  // pressure variation, so we trust it; otherwise we simulate.
+  return nonHalfCount >= 2;
+}
+
+function freehandOptionsFor(points, overrides = {}) {
+  const simulate = !hasRealPressure(points);
+  return {
+    ...FREEHAND_OPTIONS_BASE,
+    simulatePressure: simulate,
+    ...overrides
+  };
+}
+
+// Cache the freehand polygon on the stroke object keyed on a stable signature
+// (point count + endpoint positions). Recomputing 100+ point polygons every
+// frame at 60fps is the dominant render cost; the cache cuts that to one
+// compute per stroke per shape change.
+function freehandPolygonForStroke(stroke, options) {
+  if (!stroke?.points?.length) return null;
+  const cacheKey = `${stroke.points.length}:${stroke.points[0]?.x ?? 0}:${stroke.points[0]?.y ?? 0}:${
+    stroke.points[stroke.points.length - 1]?.x ?? 0
+  }:${stroke.points[stroke.points.length - 1]?.y ?? 0}`;
+  if (stroke.__freehandCacheKey === cacheKey && stroke.__freehandPolygon) {
+    return stroke.__freehandPolygon;
+  }
+  const polygon = getStroke(pointsToFreehandInput(stroke.points), options);
+  // Mutating the stroke object is safe here because strokeStore.getStrokes()
+  // already returns fresh copies; the cache is per-frame-cycle, not persistent.
+  try {
+    Object.defineProperty(stroke, "__freehandCacheKey", { value: cacheKey, configurable: true });
+    Object.defineProperty(stroke, "__freehandPolygon", { value: polygon, configurable: true });
+  } catch {
+    // Frozen objects fall through silently — getStroke will run each frame.
+  }
+  return polygon;
+}
+
+function fillFreehandPolygon(ctx, polygon) {
+  if (!polygon || polygon.length === 0) return;
+  ctx.beginPath();
+  for (let i = 0; i < polygon.length; i += 1) {
+    const [x, y] = polygon[i];
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+  ctx.closePath();
+  ctx.fill();
+}
+
 const GLOW_LAYERS = [
   {
     shadowColor: "rgb(110, 185, 212)",
@@ -32,14 +122,22 @@ function drawSingleStroke(ctx, stroke, options = {}) {
     return;
   }
 
+  // M7a — perfect-freehand fill replaces the legacy lineTo stroke. Per-stroke
+  // size derives from the requested lineWidth so element renderers keep their
+  // visual weight contract. simulatePressure switches off automatically when
+  // the device reports real stylus pressure.
+  const size = (options.lineWidth ?? 4.2) * 1.05;
+  const polygon = freehandPolygonForStroke(
+    stroke,
+    freehandOptionsFor(stroke.points, { size })
+  );
+  if (!polygon || polygon.length === 0) {
+    return;
+  }
   ctx.save();
-  ctx.strokeStyle = options.color ?? "#241b16";
-  ctx.lineWidth = options.lineWidth ?? 4.2;
-  ctx.lineCap = "round";
-  ctx.lineJoin = "round";
+  ctx.fillStyle = options.color ?? "#241b16";
   ctx.globalAlpha = options.alpha ?? 1;
-  traceStrokePath(ctx, stroke);
-  ctx.stroke();
+  fillFreehandPolygon(ctx, polygon);
   ctx.restore();
 }
 
@@ -114,12 +212,16 @@ function drawSingleGlowingStroke(ctx, stroke, timestamp, glowAlpha = 1) {
   }
 }
 
-export function drawStrokes(ctx, strokes, currentStroke, config) {
+export function drawStrokes(ctx, strokes, currentStroke, config, options = {}) {
+  // M7a — `inkAlphaScale` lets the caller dim the rendered glyph when a
+  // prepared (open-ring) spell is active. The renderer keeps the raw point
+  // list unchanged; only the rendered ink alpha is scaled.
+  const inkScale = typeof options.inkAlphaScale === "number" ? options.inkAlphaScale : 1;
   for (const stroke of strokes) {
     drawSingleStroke(ctx, stroke, {
       color: config.renderer.inkColor,
       lineWidth: 4.4,
-      alpha: 0.94
+      alpha: 0.94 * inkScale
     });
   }
 
@@ -127,7 +229,7 @@ export function drawStrokes(ctx, strokes, currentStroke, config) {
     drawSingleStroke(ctx, currentStroke, {
       color: config.renderer.inkColor,
       lineWidth: 4.4,
-      alpha: 0.72
+      alpha: 0.72 * inkScale
     });
   }
 }

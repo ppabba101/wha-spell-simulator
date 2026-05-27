@@ -29,7 +29,7 @@ export class CanvasRenderer {
     this.config = config;
   }
 
-  renderGlyph({ strokes, currentStroke, pipeline, showGuides, showDebug }) {
+  renderGlyph({ strokes, currentStroke, pipeline, showGuides, showDebug, inkAlphaScale }) {
     const width = this.glyphCanvas.width;
     const height = this.glyphCanvas.height;
     drawPaper(this.glyphCtx, width, height);
@@ -38,7 +38,10 @@ export class CanvasRenderer {
       drawGuides(this.glyphCtx, pipeline?.ring, width, height, this.config);
     }
 
-    drawStrokes(this.glyphCtx, strokes, currentStroke, this.config);
+    // M7a — when a prepared spell is on the canvas, ink is dimmed to 50%
+    // until the user closes the ring with a dot. Active and idle spells
+    // render at full opacity (inkAlphaScale defaults to 1 in drawStrokes).
+    drawStrokes(this.glyphCtx, strokes, currentStroke, this.config, { inkAlphaScale });
 
     if (showGuides && pipeline?.ring?.found) {
       drawRingDebug(this.glyphCtx, pipeline.ring);
